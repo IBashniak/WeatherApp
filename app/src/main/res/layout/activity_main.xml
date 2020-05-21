@@ -79,4 +79,25 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         tools:layout_editor_absoluteX="32dp" />
 
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="194dp"
+        android:layout_height="180dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_response"
+        app:srcCompat="@drawable/compass_rose16" />
+
+    <ImageView
+        android:id="@+id/iv_windDirection"
+        android:layout_width="99dp"
+        android:layout_height="346dp"
+        android:rotation="90"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+        app:layout_constraintEnd_toEndOf="@+id/imageView4"
+        app:layout_constraintStart_toStartOf="@+id/imageView4"
+        app:layout_constraintTop_toTopOf="@+id/imageView4"
+        app:srcCompat="@drawable/baseline_navigation_24" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

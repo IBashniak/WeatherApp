@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="Beaufort_en">
+        <item>Calm</item>
+        <item>Light air</item>
+        <item>Light breeze</item>
+        <item>Gentle breeze</item>
+        <item>Moderate breeze</item>
+        <item>Fresh breeze </item>
+        <item>Strong breeze</item>
+        <item>High wind</item>
+        <item>Gale</item>
+        <item>Strong gale</item>
+        <item>Storm</item>
+        <item>Violent storm</item>
+        <item>Hurricane</item>
+    </string-array>
+
+</resources>

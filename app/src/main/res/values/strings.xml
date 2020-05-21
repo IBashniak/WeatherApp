@@ -3,4 +3,41 @@
     <string name="request">request</string>
     <string name="iv_weatherconditionicon_primary">iv_weatherConditionIcon_primary</string>
     <string name="iv_weatherconditionicon_secondary">iv_weatherConditionIcon_secondary</string>
+
+    <string-array name="wind_direction">
+        <item>N</item>
+        <item>NNE</item>
+        <item>NE</item>
+        <item>ENE</item>
+        <item>E </item>
+        <item>ESE</item>
+        <item>SE</item>
+        <item>SSE</item>
+        <item>S</item>
+        <item>SSW</item>
+        <item>SW</item>
+        <item>WSW</item>
+        <item>W </item>
+        <item>WNW</item>
+        <item>NW</item>
+        <item>NNW</item>
+        <item>N</item>
+
+    </string-array>
+
+    <!--    <string name="Beaufort0">Штиль</string>-->
+    <!--    <string name="Beaufort1">Light air</string>-->
+    <!--    <string name="Beaufort2">Light breeze</string>-->
+    <!--    <string name="Beaufort3">Слабый</string>-->
+    <!--    <string name="Beaufort4">Умеренный</string>-->
+    <!--    <string name="Beaufort5">Свежий </string>-->
+    <!--    <string name="Beaufort6">Сильный</string>-->
+    <!--    <string name="Beaufort7">Крепкий</string>-->
+    <!--    <string name="Beaufort8">Очень крепкий</string>-->
+    <!--    <string name="Beaufort9">Шторм</string>-->
+    <!--    <string name="Beaufort10">Сильный шторм</string>-->
+    <!--    <string name="Beaufort11">Жестокий шторм</string>-->
+    <!--    <string name="Beaufort12">Ураган</string>-->
+
+
 </resources>

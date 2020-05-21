@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.ibashniak.weatherapp.MainActivity
-import com.ibashniak.weatherapp.network.dto.Coord
+import com.ibashniak.weatherapp.R
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 class Processor(val context: Context) {
+    private val wind: Array<String>
     companion object {
 
         private const val ONE_CALL_METHOD = "onecall"
@@ -29,40 +30,22 @@ class Processor(val context: Context) {
         private const val API_KEY_STRING = "APPID"
         private const val API_KEY = "0fd732b2980dcc11b580078dfee4aea9"
         private const val TIMEOUT_IN_SECONDS = 2
-        private val wind = listOf<String>(
-            "N",
-            "NNE",
-            "NE",
-            "ENE",
-            "E",
-            "ESE",
-            "SE",
-            "SSE",
-            "S",
-            "SSW",
-            "SW",
-            "WSW",
-            "W",
-            "WNW",
-            "NW",
-            "NNW",
-            "N"
-        )
     }
 
     private val client: OkHttpClient
-    val coordChannel = Channel<Coord>()
-    val responseChannel = Channel<String>()
+    val responseChannel = Channel<CurrentWeatherResponse>()
 
     init {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
+        wind = context.resources.getStringArray(R.array.wind_direction)
         client =
             OkHttpClient.Builder().connectTimeout(TIMEOUT_IN_SECONDS.toLong(), TimeUnit.SECONDS)
                 .writeTimeout(TIMEOUT_IN_SECONDS.toLong(), TimeUnit.SECONDS)
                 .readTimeout(TIMEOUT_IN_SECONDS.toLong(), TimeUnit.SECONDS)
                 .addInterceptor(loggingInterceptor)  //  okhttp3.OkHttpClient
                 .build()
+
     }
 
     @SuppressLint("ResourceType", "SetTextI18n")
@@ -105,10 +88,13 @@ class Processor(val context: Context) {
 
             {
                 val index = (data.wind.deg / 22.5).roundToInt()
-                wind[index]
-                MainActivity.activityMainBinding!!.tvWind.setText(" ${data.wind.speed}\n ${wind[index]} ")
+                val binding = MainActivity.activityMainBinding!!
 
-                MainActivity.activityMainBinding!!.etTemperature.setText(data.main.temp.toString() + "°C")
+                binding.tvWind.text = " ${data.wind.speed}\n ${wind[index]} "
+
+                binding.etTemperature.text = data.main.temp.toString() + "°C"
+
+                binding.ivWindDirection.rotation = data.wind.deg.toFloat()
 
             }
 
@@ -118,7 +104,7 @@ class Processor(val context: Context) {
             Log.d(TAG, "isSuccessful ${response.isSuccessful}  ")
 
 
-            responseChannel.send("networkResponse $resp  ")
+            responseChannel.send(data)
         }
     }
 
