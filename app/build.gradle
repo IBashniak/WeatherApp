@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-//apply plugin: 'kotlinx-serialization'
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -42,5 +43,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.7.1'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.appunity.retrofit2:adapter-guava:2.0.2'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
 
 }

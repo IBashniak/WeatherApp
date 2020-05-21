@@ -1,20 +1,25 @@
 package com.ibashniak.weatherapp.network.processor
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
+import com.ibashniak.weatherapp.MainActivity
 import com.ibashniak.weatherapp.network.dto.Coord
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ImplicitReflectionSerializer
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
-class Processor {
+class Processor(val context: Context) {
     companion object {
 
         private const val ONE_CALL_METHOD = "onecall"
@@ -24,6 +29,25 @@ class Processor {
         private const val API_KEY_STRING = "APPID"
         private const val API_KEY = "0fd732b2980dcc11b580078dfee4aea9"
         private const val TIMEOUT_IN_SECONDS = 2
+        private val wind = listOf<String>(
+            "N",
+            "NNE",
+            "NE",
+            "ENE",
+            "E",
+            "ESE",
+            "SE",
+            "SSE",
+            "S",
+            "SSW",
+            "SW",
+            "WSW",
+            "W",
+            "WNW",
+            "NW",
+            "NNW",
+            "N"
+        )
     }
 
     private val client: OkHttpClient
@@ -41,32 +65,52 @@ class Processor {
                 .build()
     }
 
+    @SuppressLint("ResourceType", "SetTextI18n")
     @ImplicitReflectionSerializer
-    fun requestWeather(city: String = "Odessa", country: String = "UA") {
+    fun requestWeather(city: String = "Odessa", country: String = "UA", lang: String = "ru") {
         val TAG = "requestWeather"
         Log.d("$TAG '0' ", ENDPOINT)
         GlobalScope.launch(Dispatchers.IO) {
 
             //https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=0fd732b2980dcc11b580078dfee4aea9
-            val urlBuilder = HttpUrl.Builder()
+            val url = HttpUrl.Builder()
                 .scheme("https")
                 .host(ENDPOINT)
                 .addPathSegments("data/2.5")
                 .addPathSegment(CURRENT_WEATHER_METHOD)
                 .addQueryParameter(API_KEY_STRING, API_KEY)
                 .addQueryParameter("q", "$city,$country")
+                .addQueryParameter("lang", lang)
+                .addQueryParameter("units", "metric")
                 .build()
 
-            Log.d("$TAG '0' ", "body  ${urlBuilder}")
-            val request: Request = urlBuilder.let {
+            Log.d("$TAG '0' ", "body  ${url}")
+            val request: Request = url.let {
                 Request.Builder()
-                    .url(urlBuilder)
+                    .url(url)
                     .build()
             }
 
             val response = client.newCall(request).execute()
             val resp = response.body?.string()
             val data = CurrentWeatherResponse.toObject(resp.toString())
+
+
+            IconDownloader.getIcon(
+                data.weather[0],
+                MainActivity.activityMainBinding!!.ivWeatherConditionIconPrimary,
+                context
+            )
+            withContext(Dispatchers.Main)
+
+            {
+                val index = (data.wind.deg / 22.5).roundToInt()
+                wind[index]
+                MainActivity.activityMainBinding!!.tvWind.setText(" ${data.wind.speed}\n ${wind[index]} ")
+
+                MainActivity.activityMainBinding!!.etTemperature.setText(data.main.temp.toString() + "°C")
+
+            }
 
             Log.d("$TAG '0' ", "body ${data.toString()}  ")
             Log.d(TAG, "message resp __ ${resp}  ")
