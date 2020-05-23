@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Weather App</string>
     <string name="request">request</string>
-    <string name="iv_weatherconditionicon_primary">iv_weatherConditionIcon_primary</string>
-    <string name="iv_weatherconditionicon_secondary">iv_weatherConditionIcon_secondary</string>
+    <string name="iv_weatherConditionIcon_primary">iv_weatherConditionIcon_primary</string>
+    <string name="iv_weatherConditionIcon_secondary">iv_weatherConditionIcon_secondary</string>
 
     <string-array name="wind_direction">
         <item>N</item>

@@ -28,7 +28,6 @@ class IconDownloader {
         private const val ENDPOINT = "openweathermap.org"
         private const val CURRENT_WEATHER_METHOD = "img/wn"
         private const val FILE_NAME_END = "@2x.png"
-        private const val TIMEOUT_IN_SECONDS = 2
 
         fun getIcon(weather: Weather, icon: ImageView, context: Context) {
             val TAG = "getIcon"

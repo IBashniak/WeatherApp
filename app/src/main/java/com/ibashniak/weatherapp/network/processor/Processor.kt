@@ -3,21 +3,18 @@ package com.ibashniak.weatherapp.network.processor
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import com.ibashniak.weatherapp.MainActivity
 import com.ibashniak.weatherapp.R
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.ImplicitReflectionSerializer
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
-import kotlin.math.roundToInt
 
 class Processor(val context: Context) {
     private val wind: Array<String>
@@ -67,7 +64,7 @@ class Processor(val context: Context) {
                 .addQueryParameter("units", "metric")
                 .build()
 
-            Log.d("$TAG '0' ", "body  ${url}")
+            Log.d("$TAG '0' ", "body  $url")
             val request: Request = url.let {
                 Request.Builder()
                     .url(url)
@@ -79,27 +76,8 @@ class Processor(val context: Context) {
             val data = CurrentWeatherResponse.toObject(resp.toString())
 
 
-            IconDownloader.getIcon(
-                data.weather[0],
-                MainActivity.activityMainBinding!!.ivWeatherConditionIconPrimary,
-                context
-            )
-            withContext(Dispatchers.Main)
-
-            {
-                val index = (data.wind.deg / 22.5).roundToInt()
-                val binding = MainActivity.activityMainBinding!!
-
-                binding.tvWind.text = " ${data.wind.speed}\n ${wind[index]} "
-
-                binding.etTemperature.text = data.main.temp.toString() + "°C"
-
-                binding.ivWindDirection.rotation = data.wind.deg.toFloat()
-
-            }
-
-            Log.d("$TAG '0' ", "body ${data.toString()}  ")
-            Log.d(TAG, "message resp __ ${resp}  ")
+            Log.d("$TAG '0' ", "body $data  ")
+            Log.d(TAG, "message resp __ $resp  ")
             Log.d(TAG, "networkResponse ${response.networkResponse.toString()}  ")
             Log.d(TAG, "isSuccessful ${response.isSuccessful}  ")
 

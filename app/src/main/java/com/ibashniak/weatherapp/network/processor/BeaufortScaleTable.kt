@@ -3,10 +3,10 @@ package com.ibashniak.weatherapp.network.processor
 import android.content.Context
 import com.ibashniak.weatherapp.R
 
-class BeaufortScaleTable() {
+class BeaufortScaleTable {
 
     companion object {
-        fun getBeaufortNumber(speed: Double): Int {
+        private fun getBeaufortNumber(speed: Double): Int {
             return when {
                 speed <= 0.2 -> 0
                 speed <= 1.5 -> 1
