@@ -3,6 +3,7 @@ package com.ibashniak.weatherapp
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.ibashniak.weatherapp.databinding.ActivityMainBinding
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
@@ -23,27 +24,33 @@ class MainActivity : AppCompatActivity() {
 //    private var _activityMainBinding: ActivityMainBinding
 
     companion object {
-        var activityMainBinding: ActivityMainBinding? = null
+//        private var activityMainBinding: ActivityMainBinding? = null
     }
 
 
     private lateinit var networkProcessor: Processor
+    private lateinit var BeaufortEn: Array<String>
+    private lateinit var BeaufortRu: Array<String>
+    private lateinit var activityMainBinding: ActivityMainBinding
 
-
+    @ImplicitReflectionSerializer
     @ExperimentalCoroutinesApi
     @SuppressLint("SetTextI18n")
-    @ImplicitReflectionSerializer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(activityMainBinding!!.root)
+        setContentView(activityMainBinding.root)
 
-        networkProcessor = Processor(this)
-        networkProcessor.requestWeather()
 
-        activityMainBinding!!.btnRequest.setOnClickListener {
-            Log.d("setOnClickListener", " start")
-            networkProcessor.requestWeather()
+        BeaufortEn = resources.getStringArray(R.array.Beaufort_en)
+        BeaufortRu = resources.getStringArray(R.array.Beaufort_ru)
+
+        with(activityMainBinding) {
+//            btnRequest.setOnClickListener {
+//                Log.d("setOnClickListener", " start")
+//                networkProcessor.requestWeather()
+//            }
+            btnRequest.visibility = View.GONE
         }
 
         GlobalScope.launch(Dispatchers.Main) {
@@ -54,37 +61,61 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    @ImplicitReflectionSerializer
+    override fun onStart() {
+        Log.d("onStart", "onStart")
+        super.onStart()
+        networkProcessor = Processor(this)
+        networkProcessor.requestWeather()
+    }
+
+    override fun onStop() {
+        Log.d("onStop", "onStop")
+        super.onStop()
+        networkProcessor.responseChannel.close()
+    }
+
     @SuppressLint("SetTextI18n")
     private fun responseHandler(): (CurrentWeatherResponse) -> Unit {
         return {
-            val binding = activityMainBinding!!
 
-            binding.tvResponse.text = "${BeaufortScaleTable.getBeaufortString(
+            activityMainBinding.tvResponse.text = "${BeaufortScaleTable.getBeaufortString(
                 it.wind.speed,
-                this
+                BeaufortEn
             )}\n$it "
+
             if (it.weather.isNotEmpty()) {
-                binding.tvDescription.text = it.weather[0].description
+                activityMainBinding.tvDescription.text = "${it.name}  ${it.weather[0].description}"
                 IconDownloader.getIcon(
                     it.weather[0],
-                    binding.ivWeatherConditionIconPrimary,
+                    activityMainBinding.ivWeatherConditionIconPrimary,
                     this
                 )
+                if (it.weather.size > 1) {
+                    IconDownloader.getIcon(
+                        it.weather[1],
+                        activityMainBinding.ivWeatherConditionIconSecondary,
+                        this
+                    )
+                } else {
+                    activityMainBinding.ivWeatherConditionIconSecondary.visibility = View.GONE
+                }
 
             }
 
             val index = (it.wind.deg / 22.5).roundToInt()
 
             val wind = resources.getStringArray(R.array.wind_direction)
-            binding.tvWind.text = " ${it.wind.speed}\n ${wind[index]} "
-            binding.etTemperature.text = it.main.temp.toString() + "°C"
-            binding.ivWindDirection.rotation = it.wind.deg.toFloat()
-            binding.tvTempRange.text = "${it.main.temp_min} ${it.main.temp_max}"
-            binding.tvHumidity.text = "Humidity ${it.main.humidity}"
-            binding.tvWindScale.text = BeaufortScaleTable.getBeaufortString(
-                it.wind.speed,
-                this
-            )
+            activityMainBinding.tvWind.text = " ${it.wind.speed}\n ${wind[index]} "
+            activityMainBinding.etTemperature.text = it.main.temp.toString() + "°C"
+            activityMainBinding.ivWindDirection.rotation = it.wind.deg.toFloat()
+            activityMainBinding.tvTempRange.text = "${it.main.temp_min} ${it.main.temp_max}"
+            activityMainBinding.tvHumidity.text = "Humidity ${it.main.humidity}"
+            activityMainBinding.tvWindScale.text = " ${BeaufortScaleTable.getBeaufortString(
+                it.wind.speed, BeaufortEn
+            )} \n ${BeaufortScaleTable.getBeaufortString(
+                it.wind.speed, BeaufortRu
+            )}"
 
         }
     }

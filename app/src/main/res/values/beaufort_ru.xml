@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="Beaufort">
-        <item>Calm</item>
-        <item>Light air</item>
-        <item>Light breeze</item>
-        <item>Gentle breeze</item>
-        <item>Moderate breeze</item>
-        <item>Fresh breeze </item>
-        <item>Strong breeze</item>
-        <item>High wind</item>
-        <item>Gale</item>
-        <item>Strong gale</item>
-        <item>Storm</item>
-        <item>Violent storm</item>
-        <item>Hurricane</item>
+    <string-array name="Beaufort_ru">
+        <item>Штиль</item>
+        <item>Тихий</item>
+        <item>Лёгкий</item>
+        <item>Слабый</item>
+        <item>Умеренный</item>
+        <item>Свежий</item>
+        <item>Сильный</item>
+        <item>Крепкий</item>
+        <item>Очень крепкий</item>
+        <item>Шторм</item>
+        <item>Сильный шторм</item>
+        <item>Жестокий шторм</item>
+        <item>Ураган</item>
     </string-array>
 
 </resources>

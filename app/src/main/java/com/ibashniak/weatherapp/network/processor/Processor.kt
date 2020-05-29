@@ -6,6 +6,7 @@ import android.util.Log
 import com.ibashniak.weatherapp.R
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
@@ -16,8 +17,9 @@ import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
-class Processor(val context: Context) {
+class Processor(context: Context) {
     private val wind: Array<String>
+
     companion object {
 
         private const val ONE_CALL_METHOD = "onecall"
@@ -30,7 +32,7 @@ class Processor(val context: Context) {
     }
 
     private val client: OkHttpClient
-    val responseChannel = Channel<CurrentWeatherResponse>()
+    val responseChannel: Channel<CurrentWeatherResponse> = Channel()
 
     init {
         val loggingInterceptor = HttpLoggingInterceptor()
@@ -45,6 +47,7 @@ class Processor(val context: Context) {
 
     }
 
+    @ExperimentalCoroutinesApi
     @SuppressLint("ResourceType", "SetTextI18n")
     @ImplicitReflectionSerializer
     fun requestWeather(city: String = "Odessa", country: String = "UA", lang: String = "ru") {
@@ -81,8 +84,8 @@ class Processor(val context: Context) {
             Log.d(TAG, "networkResponse ${response.networkResponse.toString()}  ")
             Log.d(TAG, "isSuccessful ${response.isSuccessful}  ")
 
-
-            responseChannel.send(data)
+            if (!responseChannel.isClosedForSend)
+                responseChannel.send(data)
         }
     }
 

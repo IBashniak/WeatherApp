@@ -1,8 +1,5 @@
 package com.ibashniak.weatherapp.network.processor
 
-import android.content.Context
-import com.ibashniak.weatherapp.R
-
 class BeaufortScaleTable {
 
     companion object {
@@ -25,9 +22,7 @@ class BeaufortScaleTable {
         }
 
 
-        fun getBeaufortString(speed: Double, context: Context): String {
-            val beaufortString: Array<String> =
-                context.resources.getStringArray(R.array.Beaufort_en)
+        fun getBeaufortString(speed: Double, beaufortString: Array<String>): String {
             return beaufortString[getBeaufortNumber(speed)]
         }
     }
