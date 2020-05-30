@@ -15,6 +15,9 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
+import java.io.IOException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 class Processor(context: Context) {
@@ -74,18 +77,25 @@ class Processor(context: Context) {
                     .build()
             }
 
-            val response = client.newCall(request).execute()
-            val resp = response.body?.string()
-            val data = CurrentWeatherResponse.toObject(resp.toString())
+            try {
+                val response = client.newCall(request).execute()
+                val resp = response.body?.string()
+                val data = CurrentWeatherResponse.toObject(resp.toString())
 
+                val date: LocalDateTime = LocalDateTime.now()
+                val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm")
+                data.timeStamp = date.format(formatter)
 
-            Log.d("$TAG '0' ", "body $data  ")
-            Log.d(TAG, "message resp __ $resp  ")
-            Log.d(TAG, "networkResponse ${response.networkResponse.toString()}  ")
-            Log.d(TAG, "isSuccessful ${response.isSuccessful}  ")
+                Log.d("$TAG '0' ", "body $data  ")
+                Log.d(TAG, "message resp __ $resp  ")
+                Log.d(TAG, "networkResponse ${response.networkResponse.toString()}  ")
+                Log.d(TAG, "isSuccessful ${response.isSuccessful}  ")
 
-            if (!responseChannel.isClosedForSend)
-                responseChannel.send(data)
+                if (!responseChannel.isClosedForSend)
+                    responseChannel.send(data)
+            } catch (e: IOException) {
+                Log.d("$TAG request failed", " ${e.localizedMessage}  ")
+            }
         }
     }
 
