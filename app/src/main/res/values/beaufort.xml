@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="Beaufort_en">
+    <string-array name="Beaufort">
         <item>Calm</item>
         <item>Light air</item>
         <item>Light breeze</item>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="Beaufort">
+        <item>Штиль</item>
+        <item>Ветерок</item>
+        <item>Лёгкий бриз</item>
+        <item>Слабый бриз</item>
+        <item>Умеренный бриз</item>
+        <item>Свежий бриз</item>
+        <item>Сильный бриз</item>
+        <item>Крепкий ветер</item>
+        <item>Очень крепкий ветер</item>
+        <item>Шторм</item>
+        <item>Сильный шторм</item>
+        <item>Жестокий шторм</item>
+        <item>Ураган</item>
+    </string-array>
+</resources>

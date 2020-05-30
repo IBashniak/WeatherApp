@@ -17,6 +17,7 @@ import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 import java.time.LocalDateTime
+import java.time.ZoneOffset.ofTotalSeconds
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
@@ -82,8 +83,9 @@ class Processor(context: Context) {
                 val resp = response.body?.string()
                 val data = CurrentWeatherResponse.toObject(resp.toString())
 
-                val date: LocalDateTime = LocalDateTime.now()
-                val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm")
+                val date: LocalDateTime =
+                    LocalDateTime.ofEpochSecond(data.dt, 0, ofTotalSeconds(data.timezone))
+                val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
                 data.timeStamp = date.format(formatter)
 
                 Log.d("$TAG '0' ", "body $data  ")

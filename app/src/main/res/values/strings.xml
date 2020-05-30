@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Weather App</string>
-    <string name="request">request</string>
-    <string name="iv_weatherConditionIcon_primary">iv_weatherConditionIcon_primary</string>
-    <string name="iv_weatherConditionIcon_secondary">iv_weatherConditionIcon_secondary</string>
+    <string name="request" translatable="false">request</string>
+    <string name="iv_weatherConditionIcon_primary" translatable="false">iv_weatherConditionIcon_primary</string>
+    <string name="iv_weatherConditionIcon_secondary" translatable="false">iv_weatherConditionIcon_secondary</string>
 
     <string-array name="wind_direction">
         <item>N</item>
@@ -25,19 +26,6 @@
 
     </string-array>
 
-    <!--    <string name="Beaufort0">Штиль</string>-->
-    <!--    <string name="Beaufort1">Light air</string>-->
-    <!--    <string name="Beaufort2">Light breeze</string>-->
-    <!--    <string name="Beaufort3">Слабый</string>-->
-    <!--    <string name="Beaufort4">Умеренный</string>-->
-    <!--    <string name="Beaufort5">Свежий </string>-->
-    <!--    <string name="Beaufort6">Сильный</string>-->
-    <!--    <string name="Beaufort7">Крепкий</string>-->
-    <!--    <string name="Beaufort8">Очень крепкий</string>-->
-    <!--    <string name="Beaufort9">Шторм</string>-->
-    <!--    <string name="Beaufort10">Сильный шторм</string>-->
-    <!--    <string name="Beaufort11">Жестокий шторм</string>-->
-    <!--    <string name="Beaufort12">Ураган</string>-->
-
-
+    <string name="humidity">humidity</string>
+    <string name="speed">m/s</string>
 </resources>

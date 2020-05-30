@@ -16,6 +16,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ImplicitReflectionSerializer
+import java.util.*
 import kotlin.math.roundToInt
 
 
@@ -29,8 +30,11 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var networkProcessor: Processor
-    private lateinit var BeaufortEn: Array<String>
-    private lateinit var BeaufortRu: Array<String>
+    private lateinit var Beaufort: Array<String>
+    private lateinit var humidity: String
+    private lateinit var windSpeed: String
+    private lateinit var wind: Array<String>
+
     private lateinit var activityMainBinding: ActivityMainBinding
 
     @ImplicitReflectionSerializer
@@ -40,10 +44,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
+        Beaufort = resources.getStringArray(R.array.Beaufort)
+        humidity = resources.getString(R.string.humidity)
+        windSpeed = resources.getString(R.string.speed)
+        wind = resources.getStringArray(R.array.wind_direction)
 
-
-        BeaufortEn = resources.getStringArray(R.array.Beaufort_en)
-        BeaufortRu = resources.getStringArray(R.array.Beaufort_ru)
 
         with(activityMainBinding) {
 //            btnRequest.setOnClickListener {
@@ -61,12 +66,13 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    @ExperimentalCoroutinesApi
     @ImplicitReflectionSerializer
     override fun onStart() {
         Log.d("onStart", "onStart")
         super.onStart()
         networkProcessor = Processor(this)
-        networkProcessor.requestWeather()
+        networkProcessor.requestWeather(lang = Locale.getDefault().language)
     }
 
     override fun onStop() {
@@ -78,14 +84,12 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun responseHandler(): (CurrentWeatherResponse) -> Unit {
         return {
-
-            activityMainBinding.tvResponse.text = "${BeaufortScaleTable.getBeaufortString(
-                it.wind.speed,
-                BeaufortEn
-            )}\n$it "
+//          Debug info
+            activityMainBinding.tvResponse.text = "$it "
 
             if (it.weather.isNotEmpty()) {
-                activityMainBinding.tvDescription.text = "${it.name}  ${it.weather[0].description}"
+                activityMainBinding.tvDescription.text =
+                    "${it.name}, ${it.timeStamp} ${it.weather[0].description}"
                 IconDownloader.getIcon(
                     it.weather[0],
                     activityMainBinding.ivWeatherConditionIconPrimary,
@@ -105,18 +109,16 @@ class MainActivity : AppCompatActivity() {
 
             val index = (it.wind.deg / 22.5).roundToInt()
 
-            val wind = resources.getStringArray(R.array.wind_direction)
-            activityMainBinding.tvWind.text = " ${it.wind.speed}\n ${wind[index]} "
-            activityMainBinding.etTemperature.text = it.main.temp.toString() + "°C"
-            activityMainBinding.ivWindDirection.rotation = it.wind.deg.toFloat()
-            activityMainBinding.tvTempRange.text = "${it.main.temp_min} ${it.main.temp_max}"
-            activityMainBinding.tvHumidity.text = "Humidity ${it.main.humidity}"
-            activityMainBinding.tvWindScale.text = " ${BeaufortScaleTable.getBeaufortString(
-                it.wind.speed, BeaufortEn
-            )} \n ${BeaufortScaleTable.getBeaufortString(
-                it.wind.speed, BeaufortRu
-            )}"
-
+            with(activityMainBinding)
+            {
+                tvWind.text = " ${it.wind.speed.toInt()} $windSpeed\n ${wind[index]} "
+                etTemperature.text = it.main.temp.toString() + "°C" + " \n ${it.main.feels_like} °C"
+                ivWindDirection.rotation = it.wind.deg.toFloat()
+                tvTempRange.text = "${it.main.temp_min} ${it.main.temp_max}"
+                tvHumidity.text = "$humidity ${it.main.humidity}%"
+                tvWindScale.text =
+                    " ${BeaufortScaleTable.getBeaufortString(it.wind.speed, Beaufort)}"
+            }
         }
     }
 }
