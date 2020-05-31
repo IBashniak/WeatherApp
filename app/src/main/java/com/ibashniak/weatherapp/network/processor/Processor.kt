@@ -93,8 +93,10 @@ class Processor(context: Context) {
                 Log.d(TAG, "networkResponse ${response.networkResponse.toString()}  ")
                 Log.d(TAG, "isSuccessful ${response.isSuccessful}  ")
 
-                if (!responseChannel.isClosedForSend)
+                if (!responseChannel.isClosedForSend) {
+                    Log.d(TAG, "responseChannel.send")
                     responseChannel.send(data)
+                }
             } catch (e: IOException) {
                 Log.d("$TAG request failed", " ${e.localizedMessage}  ")
             }
