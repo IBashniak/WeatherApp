@@ -16,6 +16,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
+import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import java.time.ZoneOffset.ofTotalSeconds
 import java.time.format.DateTimeFormatter
@@ -57,50 +58,53 @@ class Processor(context: Context) {
     fun requestWeather(city: String = "Odessa", country: String = "UA", lang: String = "ru") {
         val TAG = "requestWeather"
         Log.d("$TAG '0' ", ENDPOINT)
+
         GlobalScope.launch(Dispatchers.IO) {
-
-            //https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=0fd732b2980dcc11b580078dfee4aea9
-            val url = HttpUrl.Builder()
-                .scheme("https")
-                .host(ENDPOINT)
-                .addPathSegments("data/2.5")
-                .addPathSegment(CURRENT_WEATHER_METHOD)
-                .addQueryParameter(API_KEY_STRING, API_KEY)
-                .addQueryParameter("q", "$city,$country")
-                .addQueryParameter("lang", lang)
-                .addQueryParameter("units", "metric")
-                .build()
-
-            Log.d("$TAG '0' ", "body  $url")
-            val request: Request = url.let {
-                Request.Builder()
-                    .url(url)
+            repeat(5) {
+                //https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=0fd732b2980dcc11b580078dfee4aea9
+                val url = HttpUrl.Builder()
+                    .scheme("https")
+                    .host(ENDPOINT)
+                    .addPathSegments("data/2.5")
+                    .addPathSegment(CURRENT_WEATHER_METHOD)
+                    .addQueryParameter(API_KEY_STRING, API_KEY)
+                    .addQueryParameter("q", "$city,$country")
+                    .addQueryParameter("lang", lang)
+                    .addQueryParameter("units", "metric")
                     .build()
-            }
 
-            try {
-                val response = client.newCall(request).execute()
-                val resp = response.body?.string()
-                val data = CurrentWeatherResponse.toObject(resp.toString())
-
-                val date: LocalDateTime =
-                    LocalDateTime.ofEpochSecond(data.dt, 0, ofTotalSeconds(data.timezone))
-                val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-                data.timeStamp = date.format(formatter)
-
-                Log.d("$TAG '0' ", "body $data  ")
-                Log.d(TAG, "message resp __ $resp  ")
-                Log.d(TAG, "networkResponse ${response.networkResponse.toString()}  ")
-                Log.d(TAG, "isSuccessful ${response.isSuccessful}  ")
-
-                if (!responseChannel.isClosedForSend) {
-                    Log.d(TAG, "responseChannel.send")
-                    responseChannel.send(data)
+                Log.d("$TAG '0' ", "body  $url")
+                val request: Request = url.let {
+                    Request.Builder()
+                        .url(url)
+                        .build()
                 }
-            } catch (e: IOException) {
-                Log.d("$TAG request failed", " ${e.localizedMessage}  ")
+
+                try {
+                    val response = client.newCall(request).execute()
+                    val resp = response.body?.string()
+                    val data = CurrentWeatherResponse.toObject(resp.toString())
+
+                    val date: LocalDateTime =
+                        LocalDateTime.ofEpochSecond(data.dt, 0, ofTotalSeconds(data.timezone))
+                    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+                    data.timeStamp = date.format(formatter)
+
+                    Log.d("$TAG '0' ", "body $data  ")
+                    Log.d(TAG, "message resp __ $resp  ")
+                    Log.d(TAG, "networkResponse ${response.networkResponse.toString()}  ")
+                    Log.d(TAG, "isSuccessful ${response.isSuccessful}  ")
+
+                    if (!responseChannel.isClosedForSend) {
+                        Log.d(TAG, "responseChannel.send")
+                        responseChannel.send(data)
+                        return@launch
+                    }
+                } catch (e: IOException) {
+                    Log.d("$TAG request failed", " ${e.localizedMessage}  ")
+                    sleep(5000)
+                }
             }
         }
     }
-
 }
