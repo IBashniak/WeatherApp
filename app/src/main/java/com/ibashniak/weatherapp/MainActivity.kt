@@ -68,8 +68,9 @@ class MainActivity : AppCompatActivity() {
 
     @ExperimentalCoroutinesApi
     @ImplicitReflectionSerializer
-    override fun onStart() {
-        Log.d("onStart", "onStart")
+    override fun onResume() {
+        super.onResume()
+        Log.d("onResume", "onResume")
         super.onStart()
         networkProcessor = Processor(this)
         networkProcessor.requestWeather(lang = Locale.getDefault().language)
