@@ -71,6 +71,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:contentDescription="@string/iv_weatherConditionIcon_primary"
+            android:visibility="invisible"
             app:srcCompat="@android:drawable/ic_menu_compass" />
 
         <ImageView
@@ -79,6 +80,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:contentDescription="@string/iv_weatherConditionIcon_secondary"
+            android:visibility="gone"
             app:srcCompat="@android:drawable/ic_menu_compass" />
 
     </LinearLayout>
@@ -113,7 +115,6 @@
         android:id="@+id/tv_response"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="32dp" />
 

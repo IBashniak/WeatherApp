@@ -1,8 +1,8 @@
 package com.ibashniak.weatherapp.network.processor
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import com.ibashniak.weatherapp.BuildConfig
 import com.ibashniak.weatherapp.R
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +10,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import kotlinx.serialization.ImplicitReflectionSerializer
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -27,12 +26,12 @@ class Processor(context: Context) {
 
     companion object {
 
-        private const val ONE_CALL_METHOD = "onecall"
+        //        private const val ONE_CALL_METHOD = "onecall"
+//        private const val PATH = "/data/2.5"
         private const val CURRENT_WEATHER_METHOD = "weather"
         private const val ENDPOINT = "api.openweathermap.org"
-        private const val PATH = "/data/2.5"
         private const val API_KEY_STRING = "APPID"
-        private const val API_KEY = "0fd732b2980dcc11b580078dfee4aea9"
+        private const val API_KEY = BuildConfig.API_KEY
         private const val TIMEOUT_IN_SECONDS = 2
     }
 
@@ -52,12 +51,11 @@ class Processor(context: Context) {
 
     }
 
+
     @ExperimentalCoroutinesApi
-    @SuppressLint("ResourceType", "SetTextI18n")
-    @ImplicitReflectionSerializer
     fun requestWeather(city: String = "Odessa", country: String = "UA", lang: String = "ru") {
         val TAG = "requestWeather"
-        Log.d("$TAG '0' ", ENDPOINT)
+        Log.d("$TAG '0' API_KEY $API_KEY ", ENDPOINT)
 
         GlobalScope.launch(Dispatchers.IO) {
             repeat(5) {
@@ -95,7 +93,7 @@ class Processor(context: Context) {
                     Log.d(TAG, "networkResponse ${response.networkResponse.toString()}  ")
                     Log.d(TAG, "isSuccessful ${response.isSuccessful}  ")
 
-                    if (!responseChannel.isClosedForSend) {
+                    if (response.networkResponse?.code == 200 && !responseChannel.isClosedForSend) {
                         Log.d(TAG, "responseChannel.send")
                         responseChannel.send(data)
                         return@launch

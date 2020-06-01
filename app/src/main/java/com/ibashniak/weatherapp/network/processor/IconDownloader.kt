@@ -38,7 +38,7 @@ class IconDownloader {
                 .addPathSegments(CURRENT_WEATHER_METHOD)
                 .addPathSegments(weather.icon + FILE_NAME_END)
                 .build()
-            Log.d(TAG, "https://openweathermap.org/img/wn/04d@2x.png")
+
             Log.d(TAG, url.toString())
 
             GlobalScope.launch(Dispatchers.Main) {
@@ -57,6 +57,7 @@ class IconDownloader {
                                     "onLoadFailed ${e.message}  ${e.cause}  $e.logRootCauses(TAG)"
                                 )
                             }
+                            icon.visibility = ImageView.GONE
                             return false
                         }
 
@@ -66,6 +67,7 @@ class IconDownloader {
                         ): Boolean {
                             Log.d(TAG, "onResourceReady ")
                             icon.animate().scaleX(2f).scaleY(2f).duration = 2L
+                            icon.visibility = ImageView.VISIBLE
                             return false
                         }
                     })

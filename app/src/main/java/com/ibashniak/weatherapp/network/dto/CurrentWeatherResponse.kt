@@ -19,6 +19,8 @@ data class CurrentWeatherResponse(
     val wind: Wind,
     var timeStamp: String
 ) {
+    fun getDescription(): String =
+        "$name, $timeStamp ${if (weather.isNotEmpty()) weather[0].description else ""}"
 
     companion object {
         fun toObject(stringValue: String): CurrentWeatherResponse {
