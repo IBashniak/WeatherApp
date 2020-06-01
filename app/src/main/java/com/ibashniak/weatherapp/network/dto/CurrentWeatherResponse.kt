@@ -2,6 +2,9 @@ package com.ibashniak.weatherapp.network.dto
 
 import android.util.Log
 import com.google.gson.Gson
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 data class CurrentWeatherResponse(
     val base: String,
@@ -16,11 +19,18 @@ data class CurrentWeatherResponse(
     val sys: Sys,
     val visibility: Int,
     val weather: List<Weather>,
-    val wind: Wind,
-    var timeStamp: String
+    val wind: Wind
 ) {
-    fun getDescription(): String =
-        "$name, $timeStamp ${if (weather.isNotEmpty()) weather[0].description else ""}"
+    val description: String
+        get() = "$name, $timestamp ${if (weather.isNotEmpty()) weather[0].description else ""}"
+
+    private val timestamp: String
+        get() {
+            val date: LocalDateTime =
+                LocalDateTime.ofEpochSecond(dt, 0, ZoneOffset.ofTotalSeconds(timezone))
+            val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+            return date.format(formatter)
+        }
 
     companion object {
         fun toObject(stringValue: String): CurrentWeatherResponse {

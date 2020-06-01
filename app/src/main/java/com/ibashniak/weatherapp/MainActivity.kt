@@ -11,7 +11,6 @@ import com.ibashniak.weatherapp.network.processor.BeaufortScaleTable.Companion.g
 import com.ibashniak.weatherapp.network.processor.IconDownloader
 import com.ibashniak.weatherapp.network.processor.Processor
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
@@ -33,9 +32,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
-        Beaufort = resources.getStringArray(R.array.Beaufort)
+
         humidity = resources.getString(R.string.humidity)
         windSpeed = resources.getString(R.string.speed)
+        Beaufort = resources.getStringArray(R.array.Beaufort)
         wind = resources.getStringArray(R.array.wind_direction)
 
         with(activityMainBinding) {
@@ -44,12 +44,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    @ExperimentalCoroutinesApi
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume")
         if (networkProcessor == null) {
-            networkProcessor = Processor(this)
+            networkProcessor = Processor()
         }
         activityMainBinding.progressBar.visibility = View.VISIBLE
         networkProcessor?.requestWeather(lang = Locale.getDefault().language)
@@ -62,10 +61,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStop() {
-        Log.d(TAG, "onStop")
-        super.onStop()
-    }
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
@@ -86,12 +81,13 @@ class MainActivity : AppCompatActivity() {
 
         with(activityMainBinding)
         {
-            tvDescription.text = weather.getDescription()
+            tvDescription.text = weather.description
             progressBar.visibility = View.GONE
             tvWind.text = " ${weather.wind.speed.toInt()} $windSpeed\n ${wind[index]} "
             etTemperature.text =
                 "%.1f".format(weather.main.temp) + "°C" + " \n${"%.1f".format(weather.main.feels_like)} °C"
-            ivWindDirection.rotation = weather.wind.deg.toFloat()
+            ivWindDirection.rotation = 0F
+            ivWindDirection.animate().rotation(360 + weather.wind.deg.toFloat()).duration = 1500L
             tvTempRange.text = "${weather.main.temp_min} ${weather.main.temp_max}"
             tvHumidity.text = "$humidity ${weather.main.humidity}%"
             tvWindScale.text =
