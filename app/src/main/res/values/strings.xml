@@ -4,6 +4,7 @@
     <string name="request" translatable="false">request</string>
     <string name="iv_weatherConditionIcon_primary" translatable="false">iv_weatherConditionIcon_primary</string>
     <string name="iv_weatherConditionIcon_secondary" translatable="false">iv_weatherConditionIcon_secondary</string>
+    <string name="request_permission">To provide weather forecast, application need permission to access GPS geo coordinates. Do you agree to provide the permission? </string>
 
     <string-array name="wind_direction">
         <item>N</item>

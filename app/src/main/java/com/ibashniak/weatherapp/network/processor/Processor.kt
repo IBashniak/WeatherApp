@@ -1,5 +1,6 @@
 package com.ibashniak.weatherapp.network.processor
 
+import android.location.Location
 import android.util.Log
 import com.ibashniak.weatherapp.BuildConfig
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
@@ -46,22 +47,48 @@ class Processor {
     fun requestWeather(city: String = "Odessa", country: String = "UA", lang: String = "ru") {
         val TAG = "$TAG requestWeather"
         Log.d("$TAG  ", ENDPOINT)
+        val url = HttpUrl.Builder()
+            .scheme("https")
+            .host(ENDPOINT)
+            .addPathSegments("data/2.5")
+            .addPathSegment(CURRENT_WEATHER_METHOD)
+            .addQueryParameter(API_KEY_STRING, API_KEY)
+            .addQueryParameter("q", "$city,$country")
+            .addQueryParameter("lang", lang)
+            .addQueryParameter("units", "metric")
+            .build()
 
+        requestWeather(url)
+    }
+
+    fun requestWeather(location: Location, lang: String) {
+        val TAG = "$TAG requestWeather"
+        Log.d("$TAG  ", ENDPOINT)
+        val url = HttpUrl.Builder()
+            .scheme("https")
+            .host(ENDPOINT)
+            .addPathSegments("data/2.5")
+            .addPathSegment(CURRENT_WEATHER_METHOD)
+            .addQueryParameter(API_KEY_STRING, API_KEY)
+            .addQueryParameter("lat", "${location.latitude}")
+            .addQueryParameter("lon", "${location.longitude}")
+            .addQueryParameter("lang", lang)
+            .addQueryParameter("units", "metric")
+            .build()
+        Log.d("$TAG  ", url.toString())
+        requestWeather(url)
+    }
+
+    private fun requestWeather(url: HttpUrl) {
+        val TAG = "$TAG requestWeather"
         GlobalScope.launch(Dispatchers.IO) {
             repeat(5) {
-                //https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=0fd732b2980dcc11b580078dfee4aea9
-                val url = HttpUrl.Builder()
-                    .scheme("https")
-                    .host(ENDPOINT)
-                    .addPathSegments("data/2.5")
-                    .addPathSegment(CURRENT_WEATHER_METHOD)
-                    .addQueryParameter(API_KEY_STRING, API_KEY)
-                    .addQueryParameter("q", "$city,$country")
-                    .addQueryParameter("lang", lang)
-                    .addQueryParameter("units", "metric")
-                    .build()
+                //https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=
 
-                Log.d(TAG, "body  $url")
+                if (BuildConfig.BUILD_TYPE == "debug") {
+                    Log.d(TAG, "body  $url")
+                }
+
                 val request: Request = url.let {
                     Request.Builder()
                         .url(url)
@@ -76,8 +103,14 @@ class Processor {
 
                         Log.d(
                             "$TAG ",
-                            "body $data \nmessage resp __ $resp \nnetworkResponse ${networkResponse.toString()} \nisSuccessful $isSuccessful"
+                            "body $data \nmessage resp __ $resp \n" +
+                                    "isSuccessful $isSuccessful  BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
                         )
+                        if (BuildConfig.BUILD_TYPE == "debug") {
+                            Log.d(
+                                "$TAG ", "networkResponse ${networkResponse.toString()}"
+                            )
+                        }
 
                         if (isSuccessful && networkResponse?.code == 200) {
                             Log.d(TAG, "responseChannel.send")

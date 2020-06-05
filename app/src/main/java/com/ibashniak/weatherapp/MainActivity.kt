@@ -1,35 +1,49 @@
 package com.ibashniak.weatherapp
 
 import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.ibashniak.weatherapp.databinding.ActivityMainBinding
+import com.ibashniak.weatherapp.location.LocationProvider
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
 import com.ibashniak.weatherapp.network.processor.BeaufortScaleTable.Companion.getBeaufortString
 import com.ibashniak.weatherapp.network.processor.IconDownloader
 import com.ibashniak.weatherapp.network.processor.Processor
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        const val CHECK_SETTINGS_CODE = 111
+        const val REQUEST_LOCATION_PERMISSION = 222
+    }
 
     private var networkProcessor: Processor? = null
     private lateinit var Beaufort: Array<String>
     private lateinit var humidity: String
     private lateinit var windSpeed: String
     private lateinit var wind: Array<String>
+    private lateinit var locationProvider: LocationProvider
     private val TAG = "MainActivity"
+    private var location: Location? = null
 
     private lateinit var activityMainBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        CoroutineScope(Dispatchers.Main + Job()).launch {
+            location = locationProvider.getLocation()
+        }
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
 
@@ -37,6 +51,9 @@ class MainActivity : AppCompatActivity() {
         windSpeed = resources.getString(R.string.speed)
         Beaufort = resources.getStringArray(R.array.Beaufort)
         wind = resources.getStringArray(R.array.wind_direction)
+
+        locationProvider = LocationProvider(this)
+
 
         with(activityMainBinding) {
             btnRequest.visibility = View.GONE
@@ -46,14 +63,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume")
+
+        val availability = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)
+
+        Log.d(TAG, "onResume GoogleApiAvailability ${availability == ConnectionResult.SUCCESS}")
         if (networkProcessor == null) {
             networkProcessor = Processor()
         }
         activityMainBinding.progressBar.visibility = View.VISIBLE
-        networkProcessor?.requestWeather(lang = Locale.getDefault().language)
-        GlobalScope.launch(Dispatchers.Main) {
+        CoroutineScope(Dispatchers.Main + Job()).launch {
 
+            Log.d(TAG, " locationProvider ->longitude ${location?.longitude} latitude ${location?.latitude}")
+
+            location = locationProvider.getLocation()
+
+            if (location != null) {
+                networkProcessor?.requestWeather(location!!, lang = Locale.getDefault().language)
+            } else {
+                throw Exception()
+            }
             while (networkProcessor != null)
                 for (msg in networkProcessor!!.responseChannel) {
                     responseHandler(msg)
@@ -73,7 +101,8 @@ class MainActivity : AppCompatActivity() {
     private fun responseHandler(weather: CurrentWeatherResponse) {
         Log.d(TAG, "responseHandler")
 //          Debug info
-        activityMainBinding.tvResponse.text = "$weather "
+
+        activityMainBinding.tvResponse.text = "${location?.toString()} \n$weather "
 
         downloadIcons(weather)
 
