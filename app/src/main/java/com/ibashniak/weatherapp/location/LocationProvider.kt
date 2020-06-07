@@ -34,6 +34,7 @@ class LocationProvider(private val activity: Activity) {
         MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS.toLong()
     private var GPSaccessGranted: Boolean = false
     private val locationRequest: LocationRequest
+    private var fusedLocationProviderClient = FusedLocationProviderClient(activity)
     val coordinates: Location? = null
         get() = field
 
@@ -43,12 +44,12 @@ class LocationProvider(private val activity: Activity) {
             interval = UPDATE_INTERVAL_IN_MILLISECONDS
             fastestInterval = UPDATE_INTERVAL_IN_MILLISECONDS / 2
         }
-        val LocationSettingsBuilder = LocationSettingsRequest.Builder()
+        val locationSettingsBuilder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest)
 
         val client: SettingsClient = LocationServices.getSettingsClient(activity)
         val task: Task<LocationSettingsResponse> =
-            client.checkLocationSettings(LocationSettingsBuilder.build())
+            client.checkLocationSettings(locationSettingsBuilder.build())
 
         task.addOnSuccessListener { locationSettingsResponse ->
             // All location settings are satisfied. The client can initialize
@@ -130,13 +131,14 @@ class LocationProvider(private val activity: Activity) {
         ) == PackageManager.PERMISSION_GRANTED
 
         if (checkSelfPermission) {
-            FusedLocationProviderClient(activity).lastLocation.addOnCompleteListener { task ->
+            fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
                 Log.d(
                     TAG,
                     "provider ${task.result?.provider} latitude ${task.result?.latitude}  longitude ${task.result?.longitude} "
                 )
                 if (task.result == null) {
-                    FusedLocationProviderClient(activity).requestLocationUpdates(
+
+                    fusedLocationProviderClient.requestLocationUpdates(
                         locationRequest,
                         buildLocationCallBack(continuation),
                         Looper.myLooper()
@@ -165,6 +167,7 @@ class LocationProvider(private val activity: Activity) {
                 "onLocationResult locations.size ${locationResult.locations.size} locationResult.lastLocation ${currentLocation.latitude}"
             )
             continuation.resumeWith(Result.success(currentLocation))
+            fusedLocationProviderClient.removeLocationUpdates(this)
         }
     }
 }
