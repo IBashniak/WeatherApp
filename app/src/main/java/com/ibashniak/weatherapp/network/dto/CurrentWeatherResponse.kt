@@ -26,13 +26,18 @@ data class CurrentWeatherResponse(
 
     private val timestamp: String
         get() {
+            return timeString(dt, timezone)
+        }
+
+    companion object {
+        fun timeString(dt: Long, timezone: Int): String {
             val date: LocalDateTime =
                 LocalDateTime.ofEpochSecond(dt, 0, ZoneOffset.ofTotalSeconds(timezone))
             val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
             return date.format(formatter)
         }
 
-    companion object {
+
         fun toObject(stringValue: String): CurrentWeatherResponse {
             Log.d("toObject", stringValue)
             return Gson().fromJson(stringValue, CurrentWeatherResponse::class.java)

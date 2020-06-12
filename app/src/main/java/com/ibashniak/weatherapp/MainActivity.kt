@@ -1,7 +1,7 @@
 package com.ibashniak.weatherapp
 
 import android.annotation.SuppressLint
-import android.location.Location
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -35,15 +35,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var wind: Array<String>
     private lateinit var locationProvider: LocationProvider
     private val TAG = "MainActivity"
-    private var location: Location? = null
 
     private lateinit var activityMainBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        CoroutineScope(Dispatchers.Main + Job()).launch {
-            location = locationProvider.getLocation()
-        }
+
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
 
@@ -61,27 +58,53 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        val TAG = TAG + "onRequestPermissionsResult"
+        when (requestCode) {
+            REQUEST_LOCATION_PERMISSION -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                ) {
+                    Log.d(TAG, "Permission is granted. Continue the action or workflow in the app.")
+                } else {
+                    Log.d(
+                        TAG, " Explain to the user that the feature is unavailable because" +
+                                "the features requires a permission that the user has denied." +
+                                "At the same time, respect the user's decision. Don't link to" +
+                                "system settings in an effort to convince the user to change" +
+                                "their decision."
+                    )
+                }
+                return
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+
     override fun onResume() {
         super.onResume()
 
-        val availability = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)
+        val availability = GoogleApiAvailability.getInstance()
 
-        Log.d(TAG, "onResume GoogleApiAvailability ${availability == ConnectionResult.SUCCESS}")
+        val isGooglePlayServicesAvailable = availability.isGooglePlayServicesAvailable(this)
+        val apkVer = availability.getApkVersion(this)
+        val clVer = availability.getClientVersion(this)
+        Log.d(
+            TAG,
+            "onResume GoogleApiAvailability ${isGooglePlayServicesAvailable == ConnectionResult.SUCCESS} apkVer $apkVer clVer $clVer"
+        )
         if (networkProcessor == null) {
             networkProcessor = Processor()
         }
         activityMainBinding.progressBar.visibility = View.VISIBLE
+
+
         CoroutineScope(Dispatchers.Main + Job()).launch {
 
-            Log.d(TAG, " locationProvider ->longitude ${location?.longitude} latitude ${location?.latitude}")
+            networkProcessor!!.requestWeather(lang = Locale.getDefault().language, locationProvider = locationProvider)
 
-            location = locationProvider.getLocation()
-
-            if (location != null) {
-                networkProcessor?.requestWeather(location!!, lang = Locale.getDefault().language)
-            } else {
-                throw Exception()
-            }
             while (networkProcessor != null)
                 for (msg in networkProcessor!!.responseChannel) {
                     responseHandler(msg)
@@ -89,10 +112,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        Log.d(TAG, "onPause")
+        super.onPause()
+        locationProvider.stopLocationUpdates()
+    }
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
-        networkProcessor?.responseChannel?.close()
+        networkProcessor?.onDestroy()
+        locationProvider.onDestroy()
         networkProcessor = null
         super.onDestroy()
     }
@@ -101,8 +130,7 @@ class MainActivity : AppCompatActivity() {
     private fun responseHandler(weather: CurrentWeatherResponse) {
         Log.d(TAG, "responseHandler")
 //          Debug info
-
-        activityMainBinding.tvResponse.text = "${location?.toString()} \n$weather "
+        activityMainBinding.tvResponse.text = "$weather "
 
         downloadIcons(weather)
 

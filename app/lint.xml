@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
+    <issue id="IconLauncherShape">
+        <ignore path="src/main/res/drawable/launcher.png" />
+    </issue>
     <issue id="IconLocation">
         <ignore path="src/main/res/drawable/compass_rose16.png" />
+        <ignore path="src/main/res/drawable/wind.png" />
     </issue>
 </lint>

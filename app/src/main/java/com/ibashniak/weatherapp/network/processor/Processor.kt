@@ -1,13 +1,11 @@
 package com.ibashniak.weatherapp.network.processor
 
-import android.location.Location
 import android.util.Log
 import com.ibashniak.weatherapp.BuildConfig
+import com.ibashniak.weatherapp.location.LocationProvider
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -28,7 +26,7 @@ class Processor {
         private const val TIMEOUT_IN_SECONDS = 2
     }
 
-    val TAG = "Network Processor"
+    private val TAG = "Network Processor"
     private val client: OkHttpClient
     val responseChannel: Channel<CurrentWeatherResponse> = Channel()
 
@@ -61,22 +59,28 @@ class Processor {
         requestWeather(url)
     }
 
-    fun requestWeather(location: Location, lang: String) {
+    fun requestWeather(lang: String, locationProvider: LocationProvider) {
         val TAG = "$TAG requestWeather"
-        Log.d("$TAG  ", ENDPOINT)
-        val url = HttpUrl.Builder()
-            .scheme("https")
-            .host(ENDPOINT)
-            .addPathSegments("data/2.5")
-            .addPathSegment(CURRENT_WEATHER_METHOD)
-            .addQueryParameter(API_KEY_STRING, API_KEY)
-            .addQueryParameter("lat", "${location.latitude}")
-            .addQueryParameter("lon", "${location.longitude}")
-            .addQueryParameter("lang", lang)
-            .addQueryParameter("units", "metric")
-            .build()
-        Log.d("$TAG  ", url.toString())
-        requestWeather(url)
+        Log.d(TAG, TAG)
+        CoroutineScope(Dispatchers.Main + Job()).launch {
+            locationProvider.startLocationUpdates()
+            for (location in locationProvider.locationChannel) {
+                Log.d("$TAG  ", ENDPOINT)
+                val url = HttpUrl.Builder()
+                    .scheme("https")
+                    .host(ENDPOINT)
+                    .addPathSegments("data/2.5")
+                    .addPathSegment(CURRENT_WEATHER_METHOD)
+                    .addQueryParameter(API_KEY_STRING, API_KEY)
+                    .addQueryParameter("lat", "${location.latitude}")
+                    .addQueryParameter("lon", "${location.longitude}")
+                    .addQueryParameter("lang", lang)
+                    .addQueryParameter("units", "metric")
+                    .build()
+                Log.d("$TAG  ", url.toString())
+                requestWeather(url)
+            }
+        }
     }
 
     private fun requestWeather(url: HttpUrl) {
@@ -107,9 +111,7 @@ class Processor {
                                     "isSuccessful $isSuccessful  BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
                         )
                         if (BuildConfig.BUILD_TYPE == "debug") {
-                            Log.d(
-                                "$TAG ", "networkResponse ${networkResponse.toString()}"
-                            )
+                            Log.d("$TAG ", "networkResponse ${networkResponse.toString()}")
                         }
 
                         if (isSuccessful && networkResponse?.code == 200) {
@@ -124,5 +126,9 @@ class Processor {
                 }
             }
         }
+    }
+
+    fun onDestroy() {
+        responseChannel.close()
     }
 }
