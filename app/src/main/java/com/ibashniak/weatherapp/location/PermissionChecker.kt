@@ -34,7 +34,7 @@ class PermissionChecker {
                     // Check Permissions Now
 
                     val shouldShowRequestPermissionRationale =
-                        ActivityCompat.shouldShowRequestPermissionRationale(
+                        !ActivityCompat.shouldShowRequestPermissionRationale(
                             activity,
                             Manifest.permission.ACCESS_COARSE_LOCATION
                         )
@@ -45,7 +45,8 @@ class PermissionChecker {
                     if (shouldShowRequestPermissionRationale) {
                         CoroutineScope(Dispatchers.Main + Job()).launch {
                             runCatching {
-                                isGPSaccessGranted = RequestPermissionDialog.requestPermission(activity)
+                                isGPSaccessGranted =
+                                    RequestPermissionDialog.requestPermission(activity)
                                 ActivityCompat.requestPermissions(
                                     activity,
                                     arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
