@@ -23,6 +23,9 @@ class BeaufortScaleTable {
 
 
         fun getBeaufortString(speed: Double, beaufortString: Array<String>): String {
+            assert (!speed.isNaN())
+            assert (speed >= 0)
+            assert (beaufortString.size == 13)
             return beaufortString[getBeaufortNumber(speed)]
         }
     }
