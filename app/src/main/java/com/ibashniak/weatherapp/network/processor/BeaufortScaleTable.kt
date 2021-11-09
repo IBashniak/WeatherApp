@@ -1,7 +1,6 @@
 package com.ibashniak.weatherapp.network.processor
 
 class BeaufortScaleTable {
-
     companion object {
         private fun getBeaufortNumber(speed: Double): Int {
             return when {
@@ -22,12 +21,12 @@ class BeaufortScaleTable {
         }
 
         private const val BeauforLevels = 13
+    }
 
-        fun getBeaufortString(speed: Double, beaufortStrings: Array<String>): String {
-            assert (!speed.isNaN()){ "speed value should not be NaN" }
-            assert (speed >= 0){ "speed value should not be negative" }
-            assert (beaufortStrings.size == BeauforLevels){ "incorrect beaufortStrings size" }
-            return beaufortStrings[getBeaufortNumber(speed)]
-        }
+    fun getBeaufortString(speed: Double, beaufortStrings: Array<String>): String {
+        assert(!speed.isNaN()) { "speed value should not be NaN" }
+        assert(speed >= 0) { "speed value should not be negative" }
+        assert(beaufortStrings.size == BeauforLevels) { "incorrect beaufortStrings size" }
+        return beaufortStrings[getBeaufortNumber(speed)]
     }
 }

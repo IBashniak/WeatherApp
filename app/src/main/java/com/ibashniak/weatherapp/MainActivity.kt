@@ -11,23 +11,27 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.ibashniak.weatherapp.databinding.ActivityMainBinding
 import com.ibashniak.weatherapp.location.LocationProvider
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
-import com.ibashniak.weatherapp.network.processor.BeaufortScaleTable.Companion.getBeaufortString
+import com.ibashniak.weatherapp.network.processor.BeaufortScaleTable
 import com.ibashniak.weatherapp.network.processor.IconDownloader
 import com.ibashniak.weatherapp.network.processor.Processor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import di.BeaufortScaleModule
+import di.iconDownloaderModule
+import kotlinx.coroutines.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.context.GlobalContext.startKoin
 import java.util.*
 import kotlin.math.roundToInt
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), KoinComponent {
     companion object {
         const val CHECK_SETTINGS_CODE = 111
         const val REQUEST_LOCATION_PERMISSION = 222
     }
 
+    private val iconDownloader by inject<IconDownloader>()
+    private val BeaufortScale by inject<BeaufortScaleTable>()
     private var networkProcessor: Processor? = null
     private lateinit var Beaufort: Array<String>
     private lateinit var humidity: String
@@ -40,6 +44,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startKoin {
+            modules(iconDownloaderModule)
+            modules(BeaufortScaleModule)
+        }
 
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
@@ -58,7 +66,12 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    @SuppressLint("LongLogTag")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         val TAG = TAG + "onRequestPermissionsResult"
         when (requestCode) {
             REQUEST_LOCATION_PERMISSION -> {
@@ -103,7 +116,10 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.Main + Job()).launch {
 
-            networkProcessor!!.requestWeather(lang = Locale.getDefault().language, locationProvider = locationProvider)
+            networkProcessor!!.requestWeather(
+                lang = Locale.getDefault().language,
+                locationProvider = locationProvider
+            )
 
             while (networkProcessor != null)
                 for (msg in networkProcessor!!.responseChannel) {
@@ -126,6 +142,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    @DelicateCoroutinesApi
     @SuppressLint("SetTextI18n")
     private fun responseHandler(weather: CurrentWeatherResponse) {
         Log.d(TAG, "responseHandler")
@@ -148,19 +165,20 @@ class MainActivity : AppCompatActivity() {
             tvTempRange.text = "${weather.main.temp_min} ${weather.main.temp_max}"
             tvHumidity.text = "$humidity ${weather.main.humidity}%"
             tvWindScale.text =
-                " ${getBeaufortString(weather.wind.speed, Beaufort)}"
+                " ${BeaufortScale.getBeaufortString(weather.wind.speed, Beaufort)}"
         }
     }
 
+    @DelicateCoroutinesApi
     private fun downloadIcons(weather: CurrentWeatherResponse) {
         if (weather.weather.isNotEmpty()) {
-            IconDownloader.getIcon(
+            iconDownloader.getIcon(
                 weather.weather[0],
                 activityMainBinding.ivWeatherConditionIconPrimary,
                 this
             )
             if (weather.weather.size > 1) {
-                IconDownloader.getIcon(
+                iconDownloader.getIcon(
                     weather.weather[1],
                     activityMainBinding.ivWeatherConditionIconSecondary,
                     this
