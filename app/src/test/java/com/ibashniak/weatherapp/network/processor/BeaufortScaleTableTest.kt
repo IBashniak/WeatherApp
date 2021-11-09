@@ -2,7 +2,7 @@ package com.ibashniak.weatherapp.network.processor
 
 import org.junit.Test
 import java.lang.AssertionError
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 class BeaufortScaleTableTest {
     private val sut = BeaufortScaleTable
@@ -12,49 +12,40 @@ class BeaufortScaleTableTest {
     @Test
     fun `when speed less or equal to 0,2 then beaufortString index is 0`() {
         assertEquals(
-            sut.getBeaufortString(0.2, beaufortString),
-            beaufortString[0]
+            beaufortString[0],
+            sut.getBeaufortString(0.2, beaufortString)
         )
     }
 
     @Test
     fun `when speed more than 32,6 then beaufortString index is 12`() {
         assertEquals(
-            sut.getBeaufortString(32.61, beaufortString),
-            beaufortString[12]
+            beaufortString[12],
+            sut.getBeaufortString(32.61, beaufortString)
         )
     }
 
     @Test
     fun `when speed less or equal to 32,6 then beaufortString index is 11`() {
         assertEquals(
-            sut.getBeaufortString(32.2, beaufortString),
-            beaufortString[11]
+            beaufortString[11],
+            sut.getBeaufortString(32.2, beaufortString)
         )
     }
 
     @Test(expected = AssertionError::class)
-    fun `when array size isn't 13 then throw AssertionError`() {
-        assertEquals(
-            sut.getBeaufortString(1.2, arrayOf("0", "1", "2", "3")),
-            beaufortString[1]
-        )
+    fun `when array has improper size then throw AssertionError`() {
+        sut.getBeaufortString(1.2, arrayOf("0", "1", "2", "3"))
     }
 
     @Test(expected = AssertionError::class)
     fun `when speed is NaN then throw AssertionError`() {
-        assertEquals(
-            sut.getBeaufortString(Double.NaN, beaufortString),
-            beaufortString[0]
-        )
+        sut.getBeaufortString(Double.NaN, beaufortString)
     }
 
 
     @Test(expected = AssertionError::class)
-    fun `when speed less than 0 then throw AssertionError`() {
-        assertEquals(
-            sut.getBeaufortString(-1.2, beaufortString),
-            beaufortString[1]
-        )
+    fun `when speed is negative then throw AssertionError`() {
+        sut.getBeaufortString(-1.2, beaufortString)
     }
 }
