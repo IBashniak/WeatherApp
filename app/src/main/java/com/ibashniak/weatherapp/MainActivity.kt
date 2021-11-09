@@ -17,6 +17,7 @@ import com.ibashniak.weatherapp.network.processor.Processor
 import di.BeaufortScaleModule
 import di.iconDownloaderModule
 import kotlinx.coroutines.*
+import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.GlobalContext.startKoin
@@ -28,6 +29,10 @@ class MainActivity : AppCompatActivity(), KoinComponent {
     companion object {
         const val CHECK_SETTINGS_CODE = 111
         const val REQUEST_LOCATION_PERMISSION = 222
+        private val koin: KoinApplication = startKoin {
+            modules(iconDownloaderModule)
+            modules(BeaufortScaleModule)
+        }
     }
 
     private val iconDownloader by inject<IconDownloader>()
@@ -42,13 +47,9 @@ class MainActivity : AppCompatActivity(), KoinComponent {
 
     private lateinit var activityMainBinding: ActivityMainBinding
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startKoin {
-            modules(iconDownloaderModule)
-            modules(BeaufortScaleModule)
-        }
-
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
 
