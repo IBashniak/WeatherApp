@@ -4,25 +4,24 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.ibashniak.weatherapp.data.Repository
 import com.ibashniak.weatherapp.databinding.ActivityMainBinding
 import com.ibashniak.weatherapp.location.LocationProvider
-import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
-import com.ibashniak.weatherapp.network.processor.BeaufortScaleTable
-import com.ibashniak.weatherapp.network.processor.IconDownloader
 import com.ibashniak.weatherapp.network.processor.Processor
+import com.ibashniak.weatherapp.ui.Animator
 import di.BeaufortScaleModule
-import di.iconDownloaderModule
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import org.koin.core.context.GlobalContext.startKoin
 import java.util.*
-import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity(), KoinComponent {
@@ -30,41 +29,29 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         const val CHECK_SETTINGS_CODE = 111
         const val REQUEST_LOCATION_PERMISSION = 222
         private val koin: KoinApplication = startKoin {
-            modules(iconDownloaderModule)
+
             modules(BeaufortScaleModule)
         }
     }
 
-    private val iconDownloader by inject<IconDownloader>()
-    private val BeaufortScale by inject<BeaufortScaleTable>()
     private var networkProcessor: Processor? = null
-    private lateinit var Beaufort: Array<String>
-    private lateinit var humidity: String
-    private lateinit var windSpeed: String
-    private lateinit var wind: Array<String>
+    private lateinit var animator: Animator
     private lateinit var locationProvider: LocationProvider
     private val TAG = "MainActivity"
 
     private lateinit var activityMainBinding: ActivityMainBinding
+    private lateinit var repo: Repository
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(activityMainBinding.root)
+        repo = Repository(resources, this)
+        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        humidity = resources.getString(R.string.humidity)
-        windSpeed = resources.getString(R.string.speed)
-        Beaufort = resources.getStringArray(R.array.Beaufort)
-        wind = resources.getStringArray(R.array.wind_direction)
-
+        activityMainBinding.lifecycleOwner = this
+        activityMainBinding.viewmodel = repo
+        animator = Animator(this, activityMainBinding.ivWindDirection, repo.weatherNow)
         locationProvider = LocationProvider(this)
-
-
-        with(activityMainBinding) {
-            btnRequest.visibility = View.GONE
-        }
-
     }
 
     @SuppressLint("LongLogTag")
@@ -82,6 +69,11 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                 ) {
                     Log.d(TAG, "Permission is granted. Continue the action or workflow in the app.")
                 } else {
+                    Log.d(TAG, "onRequestPermissionsResult: ")
+                    Log.d(
+                        TAG,
+                        "onRequestPermissionsResult() called with: requestCode = $requestCode, permissions = $permissions, grantResults = $grantResults"
+                    )
                     Log.d(
                         TAG, " Explain to the user that the feature is unavailable because" +
                                 "the features requires a permission that the user has denied." +
@@ -112,8 +104,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         if (networkProcessor == null) {
             networkProcessor = Processor()
         }
-        activityMainBinding.progressBar.visibility = View.VISIBLE
-
+        repo.setProgressBarVisibility(true)
 
         CoroutineScope(Dispatchers.Main + Job()).launch {
 
@@ -124,7 +115,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
 
             while (networkProcessor != null)
                 for (msg in networkProcessor!!.responseChannel) {
-                    responseHandler(msg)
+                    repo.onCurrentWeatherResponse(msg)
                 }
         }
     }
@@ -141,51 +132,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         locationProvider.onDestroy()
         networkProcessor = null
         super.onDestroy()
-    }
-
-    @DelicateCoroutinesApi
-    @SuppressLint("SetTextI18n")
-    private fun responseHandler(weather: CurrentWeatherResponse) {
-        Log.d(TAG, "responseHandler")
-//          Debug info
-        activityMainBinding.tvResponse.text = "$weather "
-
-        downloadIcons(weather)
-
-        val index = (weather.wind.deg / 22.5).roundToInt()
-
-        with(activityMainBinding)
-        {
-            tvDescription.text = weather.description
-            progressBar.visibility = View.GONE
-            tvWind.text = " ${weather.wind.speed.toInt()} $windSpeed\n ${wind[index]} "
-            etTemperature.text =
-                "%.1f".format(weather.main.temp) + "°C" + " \n${"%.1f".format(weather.main.feels_like)} °C"
-            ivWindDirection.rotation = 0F
-            ivWindDirection.animate().rotation(360 + weather.wind.deg.toFloat()).duration = 1500L
-            tvTempRange.text = "${weather.main.temp_min} ${weather.main.temp_max}"
-            tvHumidity.text = "$humidity ${weather.main.humidity}%"
-            tvWindScale.text =
-                " ${BeaufortScale.getBeaufortString(weather.wind.speed, Beaufort)}"
-        }
-    }
-
-    @DelicateCoroutinesApi
-    private fun downloadIcons(weather: CurrentWeatherResponse) {
-        if (weather.weather.isNotEmpty()) {
-            iconDownloader.getIcon(
-                weather.weather[0],
-                activityMainBinding.ivWeatherConditionIconPrimary,
-                this
-            )
-            if (weather.weather.size > 1) {
-                iconDownloader.getIcon(
-                    weather.weather[1],
-                    activityMainBinding.ivWeatherConditionIconSecondary,
-                    this
-                )
-            }
-        }
     }
 
 }

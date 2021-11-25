@@ -1,13 +1,32 @@
 package com.ibashniak.weatherapp.network.processor
 
-import org.junit.Test
-import java.lang.AssertionError
+import di.BeaufortScaleModule
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Test
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 
-class BeaufortScaleTableTest {
-    private val sut = BeaufortScaleTable
+
+class BeaufortScaleTableTest : KoinComponent {
+    private val sut : BeaufortScaleTable by inject()
     private val beaufortString: Array<String> =
         arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
+
+    @Before
+    fun setUp() {
+        startKoin {
+            modules(BeaufortScaleModule)
+        }
+    }
+
+    @After
+    fun stop() {
+        stopKoin()
+    }
 
     @Test
     fun `when speed less or equal to 0,2 then beaufortString index is 0`() {

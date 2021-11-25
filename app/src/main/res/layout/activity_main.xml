@@ -1,151 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <Button
-        android:id="@+id/btn_request"
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.ibashniak.weatherapp.data.Repository"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/request"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tv_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/averia_libre_bold"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_request" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="50sp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/tv_description"
-        tools:layout_editor_absoluteX="0dp">
+        <TextView
+            android:id="@+id/tv_description"
+            android:text="@{viewmodel.weatherNow.description}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/averia_libre_bold"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@+id/linearLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="100sp"
-            android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50sp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/tv_description"
+            tools:layout_editor_absoluteX="0dp">
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="50sp"
-                android:layout_height="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@drawable/wind" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="100sp"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="50sp"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:srcCompat="@drawable/wind" />
+
+                <TextView
+                    android:id="@+id/tv_wind"
+                    android:text="@{viewmodel.weatherNow.windSpeed}"
+                    android:layout_width="50sp"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:id="@+id/tv_wind"
-                android:layout_width="50sp"
+                android:id="@+id/et_temperature"
+                android:text="@{viewmodel.weatherNow.temperature}"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_gravity="fill_vertical"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif"
+                android:textSize="20sp" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageView
+                android:id="@+id/iv_weatherConditionIcon_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/iv_weatherConditionIcon_primary"
+                android:visibility="invisible"
+                app:srcCompat="@android:drawable/ic_menu_compass" />
+
+            <ImageView
+                android:id="@+id/iv_weatherConditionIcon_secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/iv_weatherConditionIcon_secondary"
+                app:weatherIcon="@{viewmodel.weatherNow.icon}"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="50sp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+            <TextView
+                android:id="@+id/tv_windScale"
+                android:text="@{viewmodel.weatherNow.windScale}"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_Humidity"
+                android:text="@{viewmodel.weatherNow.humidity}"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_tempRange"
+                android:text="@{viewmodel.weatherNow.tempRange}"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/et_temperature"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="fill_vertical"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif"
-            android:textSize="20sp" />
-
+            android:id="@+id/tv_response"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_editor_absoluteX="32dp" />
 
         <ImageView
-            android:id="@+id/iv_weatherConditionIcon_primary"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/iv_weatherConditionIcon_primary"
-            android:visibility="invisible"
-            app:srcCompat="@android:drawable/ic_menu_compass" />
+            android:id="@+id/windRose"
+            android:layout_width="194dp"
+            android:layout_height="180dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout2"
+            app:srcCompat="@drawable/compass_rose16" />
 
         <ImageView
-            android:id="@+id/iv_weatherConditionIcon_secondary"
+            android:id="@+id/iv_windDirection"
+            android:layout_width="99dp"
+            android:layout_height="346dp"
+            android:rotation="90"
+            app:layout_constraintBottom_toBottomOf="@+id/windRose"
+            app:layout_constraintEnd_toEndOf="@+id/windRose"
+            app:layout_constraintStart_toStartOf="@+id/windRose"
+            app:layout_constraintTop_toTopOf="@+id/windRose"
+            app:srcCompat="@drawable/baseline_navigation_24" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/iv_weatherConditionIcon_secondary"
-            android:visibility="gone"
-            app:srcCompat="@android:drawable/ic_menu_compass" />
+            android:layout_height="wrap_content"
+            android:visibility="@{viewmodel.progressBarVisibility}"
+            app:layout_constraintBottom_toBottomOf="@+id/windRose"
+            app:layout_constraintEnd_toEndOf="@+id/windRose"
+            app:layout_constraintStart_toStartOf="@+id/windRose"
+            app:layout_constraintTop_toTopOf="@+id/windRose" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="50sp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-
-        <TextView
-            android:id="@+id/tv_windScale"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/tv_Humidity"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/tv_tempRange"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tv_response"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="32dp" />
-
-    <ImageView
-        android:id="@+id/windRose"
-        android:layout_width="194dp"
-        android:layout_height="180dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout2"
-        app:srcCompat="@drawable/compass_rose16" />
-
-    <ImageView
-        android:id="@+id/iv_windDirection"
-        android:layout_width="99dp"
-        android:layout_height="346dp"
-        android:rotation="90"
-        app:layout_constraintBottom_toBottomOf="@+id/windRose"
-        app:layout_constraintEnd_toEndOf="@+id/windRose"
-        app:layout_constraintStart_toStartOf="@+id/windRose"
-        app:layout_constraintTop_toTopOf="@+id/windRose"
-        app:srcCompat="@drawable/baseline_navigation_24" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/windRose"
-        app:layout_constraintEnd_toEndOf="@+id/windRose"
-        app:layout_constraintStart_toStartOf="@+id/windRose"
-        app:layout_constraintTop_toTopOf="@+id/windRose" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
