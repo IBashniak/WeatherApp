@@ -21,17 +21,20 @@ class FusedLocationProviderAdapter(
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     private var fusedLocationProviderClient = FusedLocationProviderClient(activity)
     private val TAG = "FusedLocationProviderAdapter"
+
     @DelicateCoroutinesApi
     private val locationCallBack = buildLocationCallBack()
 
     @SuppressLint("MissingPermission", "LongLogTag")
     fun requestLocationUpdates() {
         Log.d(TAG, "requestLocationUpdates")
-        fusedLocationProviderClient.requestLocationUpdates(
-            locationRequest,
-            locationCallBack,
-            Looper.myLooper()
-        )
+        Looper.myLooper()?.let {
+            fusedLocationProviderClient.requestLocationUpdates(
+                locationRequest,
+                locationCallBack,
+                it
+            )
+        }
     }
 
     @DelicateCoroutinesApi
@@ -51,9 +54,9 @@ class FusedLocationProviderAdapter(
         }
 
         @SuppressLint("LongLogTag")
-        override fun onLocationAvailability(p0: LocationAvailability?) {
+        override fun onLocationAvailability(p0: LocationAvailability) {
             super.onLocationAvailability(p0)
-            Log.d(TAG, "onLocationAvailability isLocationAvailable ${p0?.isLocationAvailable}")
+            Log.d(TAG, "onLocationAvailability isLocationAvailable ${p0.isLocationAvailable}")
         }
     }
 

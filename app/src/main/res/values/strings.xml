@@ -2,30 +2,13 @@
 <resources>
     <string name="app_name">Weather App</string>
     <string name="request" translatable="false">request</string>
+    <string name="comfort">comfort</string>
+    <string name="real">real</string>
+    <string name="min">min</string>
+    <string name="max">max</string>
     <string name="iv_weatherConditionIcon_primary" translatable="false">iv_weatherConditionIcon_primary</string>
     <string name="iv_weatherConditionIcon_secondary" translatable="false">iv_weatherConditionIcon_secondary</string>
     <string name="request_permission">To provide weather forecast, application need permission to access GPS geo coordinates. Do you agree to provide the permission? </string>
-
-    <string-array name="wind_direction">
-        <item>N</item>
-        <item>NNE</item>
-        <item>NE</item>
-        <item>ENE</item>
-        <item>E </item>
-        <item>ESE</item>
-        <item>SE</item>
-        <item>SSE</item>
-        <item>S</item>
-        <item>SSW</item>
-        <item>SW</item>
-        <item>WSW</item>
-        <item>W </item>
-        <item>WNW</item>
-        <item>NW</item>
-        <item>NNW</item>
-        <item>N</item>
-
-    </string-array>
 
     <string name="humidity">humidity</string>
     <string name="speed">m/s</string>

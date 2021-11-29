@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         activityMainBinding.lifecycleOwner = this
-        activityMainBinding.viewmodel = repo
+        activityMainBinding.viewModel = repo
         animator = Animator(this, activityMainBinding.ivWindDirection, repo.weatherNow)
         locationProvider = LocationProvider(this)
     }

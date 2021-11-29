@@ -17,7 +17,6 @@ import okhttp3.ResponseBody
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.*
-import kotlin.math.roundToInt
 
 
 class Repository(private val res: Resources, private val cntxt: Context) : KoinComponent {
@@ -40,11 +39,14 @@ class Repository(private val res: Resources, private val cntxt: Context) : KoinC
     fun onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
         Log.d(TAG, "responseHandler")
 
-        val index = (weather.wind.deg / 22.5).roundToInt()
         _progressBarVisibility.value = android.view.View.GONE
-        val wind = res.getStringArray(R.array.wind_direction)
         val windSpeedUnits = res.getString(R.string.speed)
         val humidity = res.getString(R.string.humidity)
+        val real = res.getString(R.string.real)
+        val comfort = res.getString(R.string.comfort)
+        val min = res.getString(R.string.min)
+        val max = res.getString(R.string.max)
+
         val Beaufort = res.getStringArray(R.array.Beaufort)
         val icon = weather.weather[0].icon
 
@@ -59,10 +61,10 @@ class Repository(private val res: Resources, private val cntxt: Context) : KoinC
             withContext(Dispatchers.Main) {
                 _weatherNow.value =
                     WeatherNow(
-                        " ${weather.wind.speed.toInt()} $windSpeedUnits\n ${wind[index]} ",
+                        " ${weather.wind.speed.toInt()}\n$windSpeedUnits",
                         weather.description,
-                        "%.1f".format(weather.main.temp) + "°C" + " \n${"%.1f".format(weather.main.feels_like)} °C",
-                        "${weather.main.temp_min} ${weather.main.temp_max}",
+                        "%.1f".format(weather.main.temp) + "°C $real" + " \n${"%.1f".format(weather.main.feels_like)}°C  $comfort",
+                        "${weather.main.temp_min}$min ${weather.main.temp_max}$max",
                         "$humidity ${weather.main.humidity}%",
                         " ${tableBeaufortScale.getBeaufortString(weather.wind.speed, Beaufort)}",
                         weather.wind.deg.toFloat(),

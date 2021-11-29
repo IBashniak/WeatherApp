@@ -40,7 +40,7 @@ class LocationProvider(private val activity: Activity) {
     suspend fun startLocationUpdates() {
         try {
             val locationSettingsResponse = locationSettingsAdapter.getLocationSettingsAsync()
-            Log.d(TAG, "isGpsPresent ${locationSettingsResponse.locationSettingsStates.isGpsPresent}")
+            Log.d(TAG, "isGpsPresent ${locationSettingsResponse.locationSettingsStates?.isGpsPresent}")
             if (checkPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 Log.d(TAG, "requestLocationUpdates")
                 fusedLocationProviderAdapter.requestLocationUpdates()

@@ -3,5 +3,9 @@
     <string name="app_name">Как погодка?</string>
     <string name="humidity">влажность</string>
     <string name="speed">м/с</string>
+    <string name="comfort">по ощущениям</string>
+    <string name="real">реально</string>
+    <string name="min">мин</string>
+    <string name="max">макс</string>
     <string name="request_permission">Для того чтобы предоставить  прогноза погоды, приложению необходимо разрешение на доступ к GPS координатам. Вы согласны предоставить доступ?</string>
 </resources>
