@@ -1,9 +1,9 @@
 package com.ibashniak.weatherapp.network.processor
 
-import di.BeaufortScaleModule
-import org.junit.After
+import di.appModules
+import org.junit.AfterClass
 import org.junit.Assert.assertEquals
-import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -12,20 +12,22 @@ import org.koin.core.context.stopKoin
 
 
 class BeaufortScaleTableTest : KoinComponent {
-    private val sut : BeaufortScaleTable by inject()
+    private val sut: BeaufortScaleTable by inject()
     private val beaufortString: Array<String> =
         arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
 
-    @Before
-    fun setUp() {
-        startKoin {
-            modules(BeaufortScaleModule)
+    companion object {
+        @BeforeClass @JvmStatic
+        fun setup() {
+            startKoin {
+                modules(appModules)
+            }
         }
-    }
 
-    @After
-    fun stop() {
-        stopKoin()
+        @AfterClass @JvmStatic
+        fun teardown() {
+            stopKoin()
+        }
     }
 
     @Test

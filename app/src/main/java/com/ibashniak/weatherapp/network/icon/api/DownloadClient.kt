@@ -4,7 +4,7 @@ package com.ibashniak.weatherapp.network.icon.api
 import okhttp3.HttpUrl
 import retrofit2.Retrofit
 
-object DownloadClient {
+class DownloadClient {
 
     fun client(): IconApi {
         val url = HttpUrl.Builder()

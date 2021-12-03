@@ -1,6 +1,6 @@
 package com.ibashniak.weatherapp.data
 
-data class WeatherNow(
+data class CurrentWeather(
     val windSpeed: String,
     val description: String,
     val temperature: String,

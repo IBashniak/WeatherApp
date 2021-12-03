@@ -42,30 +42,12 @@ class Processor {
     }
 
 
-    fun requestWeather(city: String = "Odessa", country: String = "UA", lang: String = "ru") {
-        val TAG = "$TAG requestWeather"
-        Log.d("$TAG  ", ENDPOINT)
-        val url = HttpUrl.Builder()
-            .scheme("https")
-            .host(ENDPOINT)
-            .addPathSegments("data/2.5")
-            .addPathSegment(CURRENT_WEATHER_METHOD)
-            .addQueryParameter(API_KEY_STRING, API_KEY)
-            .addQueryParameter("q", "$city,$country")
-            .addQueryParameter("lang", lang)
-            .addQueryParameter("units", "metric")
-            .build()
-
-        requestWeather(url)
-    }
-
     fun requestWeather(lang: String, locationProvider: LocationProvider) {
-        val TAG = "$TAG requestWeather"
-        Log.d(TAG, TAG)
+        Log.d(TAG, "requestWeather")
         CoroutineScope(Dispatchers.Main + Job()).launch {
             locationProvider.startLocationUpdates()
             for (location in locationProvider.locationChannel) {
-                Log.d("$TAG  ", ENDPOINT)
+                Log.d(TAG, ENDPOINT)
                 val url = HttpUrl.Builder()
                     .scheme("https")
                     .host(ENDPOINT)
@@ -77,14 +59,13 @@ class Processor {
                     .addQueryParameter("lang", lang)
                     .addQueryParameter("units", "metric")
                     .build()
-                Log.d("$TAG  ", url.toString())
+                Log.d(TAG, url.toString())
                 requestWeather(url)
             }
         }
     }
 
     private fun requestWeather(url: HttpUrl) {
-        val TAG = "$TAG requestWeather"
         GlobalScope.launch(Dispatchers.IO) {
             repeat(5) {
                 //https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=
@@ -106,9 +87,10 @@ class Processor {
                         val data = CurrentWeatherResponse.toObject(resp.toString())
 
                         Log.d(
-                            "$TAG ",
+                            TAG,
                             "body $data \nmessage resp __ $resp \n" +
-                                    "isSuccessful $isSuccessful  BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
+                                    "isSuccessful $isSuccessful  " +
+                                    "BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
                         )
                         if (BuildConfig.BUILD_TYPE == "debug") {
                             Log.d("$TAG ", "networkResponse ${networkResponse.toString()}")
@@ -121,7 +103,7 @@ class Processor {
                         }
                     }
                 } catch (e: IOException) {
-                    Log.d("$TAG request failed", " ${e.localizedMessage} ")
+                    Log.d(TAG, " ${e.localizedMessage} ")
                     sleep(5000)
                 }
             }

@@ -3,16 +3,21 @@ package com.ibashniak.weatherapp.ui
 import android.widget.ImageView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import com.ibashniak.weatherapp.data.WeatherNow
+import com.ibashniak.weatherapp.data.CurrentWeather
 
-class Animator(lifecycleOwner: LifecycleOwner, arrow: ImageView, weatherNow: LiveData<WeatherNow>) {
-
+class Animator(
+    lifecycleOwner: LifecycleOwner,
+    arrow: ImageView,
+    currentWeather: LiveData<CurrentWeather>
+) {
     init {
-        weatherNow.observe(lifecycleOwner,
+        currentWeather.observe(lifecycleOwner,
             { weather ->
                 if (weather != null) {
                     arrow.rotation = 0F
-                    arrow.animate().rotation(360 + weather.windDegree).duration = 1500L
+                    val circle = 360
+                    val duration = 1500L
+                    arrow.animate().rotation(circle + weather.windDegree).duration = duration
                 }
             })
     }

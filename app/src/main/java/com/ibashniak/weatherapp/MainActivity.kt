@@ -13,25 +13,17 @@ import com.ibashniak.weatherapp.databinding.ActivityMainBinding
 import com.ibashniak.weatherapp.location.LocationProvider
 import com.ibashniak.weatherapp.network.processor.Processor
 import com.ibashniak.weatherapp.ui.Animator
-import di.BeaufortScaleModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.koin.core.KoinApplication
-import org.koin.core.component.KoinComponent
-import org.koin.core.context.GlobalContext.startKoin
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), KoinComponent {
+class MainActivity : AppCompatActivity() {
     companion object {
         const val CHECK_SETTINGS_CODE = 111
         const val REQUEST_LOCATION_PERMISSION = 222
-        private val koin: KoinApplication = startKoin {
-
-            modules(BeaufortScaleModule)
-        }
     }
 
     private var networkProcessor: Processor? = null
@@ -49,8 +41,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         activityMainBinding.lifecycleOwner = this
-        activityMainBinding.viewModel = repo
-        animator = Animator(this, activityMainBinding.ivWindDirection, repo.weatherNow)
+        activityMainBinding.repository = repo
+        animator = Animator(this, activityMainBinding.ivWindDirection, repo.currentWeather)
         locationProvider = LocationProvider(this)
     }
 
@@ -72,7 +64,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                     Log.d(TAG, "onRequestPermissionsResult: ")
                     Log.d(
                         TAG,
-                        "onRequestPermissionsResult() called with: requestCode = $requestCode, permissions = $permissions, grantResults = $grantResults"
+                        "onRequestPermissionsResult() called with: requestCode = $requestCode," +
+                                " permissions = $permissions, grantResults = $grantResults"
                     )
                     Log.d(
                         TAG, " Explain to the user that the feature is unavailable because" +
@@ -99,7 +92,9 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         val clVer = availability.getClientVersion(this)
         Log.d(
             TAG,
-            "onResume GoogleApiAvailability ${isGooglePlayServicesAvailable == ConnectionResult.SUCCESS} apkVer $apkVer clVer $clVer"
+            "onResume GoogleApiAvailability" +
+                    " ${isGooglePlayServicesAvailable == ConnectionResult.SUCCESS} " +
+                    "apkVer $apkVer clVer $clVer"
         )
         if (networkProcessor == null) {
             networkProcessor = Processor()

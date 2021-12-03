@@ -5,7 +5,7 @@
 
     <data>
         <variable
-            name="viewModel"
+            name="repository"
             type="com.ibashniak.weatherapp.data.Repository"/>
     </data>
 
@@ -45,13 +45,13 @@
                 android:layout_height="match_parent"
                 android:scaleX="0.3"
                 android:scaleY="0.3"
-                android:visibility="@{viewModel.progressBarVisibility}" />
+                android:visibility="@{repository.progressBarVisibility}" />
 
         </FrameLayout>
 
         <TextView
             android:id="@+id/tv_description"
-            android:text="@{viewModel.weatherNow.description}"
+            android:text="@{repository.currentWeather.description}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/averia_libre_bold"
@@ -87,7 +87,7 @@
                     android:layout_width="50sp"
                     android:layout_height="match_parent"
                     android:includeFontPadding="false"
-                    android:text="@{viewModel.weatherNow.windSpeed}"
+                    android:text="@{repository.currentWeather.windSpeed}"
                     android:textAlignment="center"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -100,7 +100,7 @@
 
             <TextView
                 android:id="@+id/et_temperature"
-                android:text="@{viewModel.weatherNow.temperature}"
+                android:text="@{repository.currentWeather.temperature}"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="fill_vertical"
@@ -117,7 +117,7 @@
                 android:contentDescription="@string/iv_weatherConditionIcon_primary"
                 android:visibility="visible"
                 app:srcCompat="@android:drawable/ic_menu_compass"
-                app:weatherIcon="@{viewModel.weatherNow.icon}"
+                app:weatherIcon="@{repository.currentWeather.icon}"
                 tools:visibility="visible" />
 
 
@@ -132,21 +132,21 @@
 
             <TextView
                 android:id="@+id/tv_windScale"
-                android:text="@{viewModel.weatherNow.windScale}"
+                android:text="@{repository.currentWeather.windScale}"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/tv_Humidity"
-                android:text="@{viewModel.weatherNow.humidity}"
+                android:text="@{repository.currentWeather.humidity}"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/tv_tempRange"
-                android:text="@{viewModel.weatherNow.tempRange}"
+                android:text="@{repository.currentWeather.tempRange}"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />

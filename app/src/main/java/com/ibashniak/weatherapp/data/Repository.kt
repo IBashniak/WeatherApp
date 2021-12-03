@@ -24,12 +24,14 @@ class Repository(private val res: Resources, private val cntxt: Context) : KoinC
     private fun createCoroutineScope() = CoroutineScope(Job() + Dispatchers.IO)
 
     private val tableBeaufortScale: BeaufortScaleTable by inject()
-    private val _weatherNow = MutableLiveData<WeatherNow>(null)
+    private val downloadClient: DownloadClient by inject()
+
+    private val _weatherNow = MutableLiveData<CurrentWeather>(null)
     private val _progressBarVisibility =
         MutableLiveData(1).apply { value = android.view.View.VISIBLE }
     private val TAG = "Repository"
 
-    val weatherNow: LiveData<WeatherNow> = _weatherNow
+    val currentWeather: LiveData<CurrentWeather> = _weatherNow
     val progressBarVisibility: LiveData<Int> = _progressBarVisibility
 
     private fun iconFileName(weatherIcon: String): String =
@@ -53,14 +55,14 @@ class Repository(private val res: Resources, private val cntxt: Context) : KoinC
 
         coroutineScope.launch() {
             if (!checkWeatherIconFile(icon)) {
-                val resp = DownloadClient.client()
+                val resp = downloadClient.client()
                     .getIcon(IconApi.iconUrl(icon).toString())
                 Log.d(TAG, "resp.isSuccessful  = ${resp.isSuccessful} ")
                 resp.body()?.let { writeIconFileToDisk(it, icon) }
             }
             withContext(Dispatchers.Main) {
                 _weatherNow.value =
-                    WeatherNow(
+                    CurrentWeather(
                         " ${weather.wind.speed.toInt()}\n$windSpeedUnits",
                         weather.description,
                         "%.1f".format(weather.main.temp) + "°C $real" + " \n${"%.1f".format(weather.main.feels_like)}°C  $comfort",
