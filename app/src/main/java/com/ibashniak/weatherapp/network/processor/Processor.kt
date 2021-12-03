@@ -47,7 +47,7 @@ class Processor {
         CoroutineScope(Dispatchers.Main + Job()).launch {
             locationProvider.startLocationUpdates()
             for (location in locationProvider.locationChannel) {
-                Log.d(TAG, ENDPOINT)
+                Log.d(TAG, "requestWeather: $ENDPOINT")
                 val url = HttpUrl.Builder()
                     .scheme("https")
                     .host(ENDPOINT)
@@ -59,7 +59,7 @@ class Processor {
                     .addQueryParameter("lang", lang)
                     .addQueryParameter("units", "metric")
                     .build()
-                Log.d(TAG, url.toString())
+                Log.d(TAG, "requestWeather: ${url.toString()}")
                 requestWeather(url)
             }
         }
@@ -71,7 +71,7 @@ class Processor {
                 //https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=
 
                 if (BuildConfig.BUILD_TYPE == "debug") {
-                    Log.d(TAG, "body  $url")
+                    Log.d(TAG, "requestWeather: body  $url")
                 }
 
                 val request: Request = url.let {
@@ -85,25 +85,24 @@ class Processor {
                     with(response) {
                         val resp = body?.string()
                         val data = CurrentWeatherResponse.toObject(resp.toString())
-
                         Log.d(
                             TAG,
-                            "body $data \nmessage resp __ $resp \n" +
+                            "requestWeather: body $data \nmessage resp __ $resp \n" +
                                     "isSuccessful $isSuccessful  " +
                                     "BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
                         )
                         if (BuildConfig.BUILD_TYPE == "debug") {
-                            Log.d("$TAG ", "networkResponse ${networkResponse.toString()}")
+                            Log.d(TAG , "requestWeather: networkResponse ${networkResponse.toString()}")
                         }
 
                         if (isSuccessful && networkResponse?.code == 200) {
-                            Log.d(TAG, "responseChannel.send")
+                            Log.d(TAG, "requestWeather: responseChannel.send")
                             responseChannel.send(data)
                             return@launch
                         }
                     }
                 } catch (e: IOException) {
-                    Log.d(TAG, " ${e.localizedMessage} ")
+                    Log.d(TAG, "requestWeather: ${e.localizedMessage}")
                     sleep(5000)
                 }
             }

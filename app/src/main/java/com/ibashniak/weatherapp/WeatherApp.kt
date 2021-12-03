@@ -9,7 +9,7 @@ class WeatherApp  : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("WeatherApp","onCreate")
+        Log.d("WeatherApp", "onCreate: ")
         startKoin {
             modules(appModules)
         }

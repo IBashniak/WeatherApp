@@ -1,6 +1,5 @@
 package com.ibashniak.weatherapp
 
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -46,29 +45,26 @@ class MainActivity : AppCompatActivity() {
         locationProvider = LocationProvider(this)
     }
 
-    @SuppressLint("LongLogTag")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        val TAG = TAG + "onRequestPermissionsResult"
         when (requestCode) {
             REQUEST_LOCATION_PERMISSION -> {
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() &&
                             grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 ) {
-                    Log.d(TAG, "Permission is granted. Continue the action or workflow in the app.")
+                    Log.d(TAG, "onRequestPermissionsResult: Permission is granted. " +
+                            "Continue the action or workflow in the app.")
                 } else {
-                    Log.d(TAG, "onRequestPermissionsResult: ")
-                    Log.d(
-                        TAG,
-                        "onRequestPermissionsResult() called with: requestCode = $requestCode," +
-                                " permissions = $permissions, grantResults = $grantResults"
+                    Log.d(TAG, "onRequestPermissionsResult: called with: requestCode =" +
+                            " $requestCode,permissions = $permissions, grantResults = $grantResults"
                     )
                     Log.d(
-                        TAG, " Explain to the user that the feature is unavailable because" +
+                        TAG, "onRequestPermissionsResult: Explain to the user that the feature" +
+                                " is unavailable because" +
                                 "the features requires a permission that the user has denied." +
                                 "At the same time, respect the user's decision. Don't link to" +
                                 "system settings in an effort to convince the user to change" +
@@ -90,9 +86,7 @@ class MainActivity : AppCompatActivity() {
         val isGooglePlayServicesAvailable = availability.isGooglePlayServicesAvailable(this)
         val apkVer = availability.getApkVersion(this)
         val clVer = availability.getClientVersion(this)
-        Log.d(
-            TAG,
-            "onResume GoogleApiAvailability" +
+        Log.d(TAG, "onResume: GoogleApiAvailability" +
                     " ${isGooglePlayServicesAvailable == ConnectionResult.SUCCESS} " +
                     "apkVer $apkVer clVer $clVer"
         )

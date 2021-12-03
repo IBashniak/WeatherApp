@@ -20,13 +20,13 @@ class BeaufortScaleTable {
             }
         }
 
-        private const val BeauforLevels = 13
+        private const val beaufortLevels = 13
     }
 
     fun getBeaufortString(speed: Double, beaufortStrings: Array<String>): String {
         assert(!speed.isNaN()) { "speed value should not be NaN" }
         assert(speed >= 0) { "speed value should not be negative" }
-        assert(beaufortStrings.size == BeauforLevels) { "incorrect beaufortStrings size" }
+        assert(beaufortStrings.size == beaufortLevels) { "incorrect beaufortStrings size" }
         return beaufortStrings[getBeaufortNumber(speed)]
     }
 }
