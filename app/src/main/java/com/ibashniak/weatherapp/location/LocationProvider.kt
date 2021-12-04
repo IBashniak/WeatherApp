@@ -3,16 +3,14 @@ package com.ibashniak.weatherapp.location
 import android.Manifest
 import android.app.Activity
 import android.content.IntentSender
-import android.location.Location
 import android.util.Log
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.ibashniak.weatherapp.MainActivity
 import com.ibashniak.weatherapp.location.PermissionChecker.Companion.checkPermission
-import kotlinx.coroutines.channels.Channel
 
 
-class LocationProvider(private val activity: Activity) {
+class LocationProvider(private val activity: Activity, val locationChannel: LocationChaneel) {
     private val MILLISECONDS_PER_SECOND = 1000
     private val TAG = "LocationProvider"
 
@@ -33,14 +31,17 @@ class LocationProvider(private val activity: Activity) {
         }
     }
 
-    val locationChannel = Channel<Location>()
     private val locationSettingsAdapter = LocationSettingsAdapter(activity, locationRequest)
-    private val fusedLocationProviderAdapter = FusedLocationProviderAdapter(activity, locationRequest, locationChannel)
+    private val fusedLocationProviderAdapter =
+        FusedLocationProviderAdapter(activity, locationRequest, locationChannel)
 
     suspend fun startLocationUpdates() {
         try {
             val locationSettingsResponse = locationSettingsAdapter.getLocationSettingsAsync()
-            Log.d(TAG, "isGpsPresent ${locationSettingsResponse.locationSettingsStates?.isGpsPresent}")
+            Log.d(
+                TAG,
+                "isGpsPresent ${locationSettingsResponse.locationSettingsStates?.isGpsPresent}"
+            )
             if (checkPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 Log.d(TAG, "requestLocationUpdates")
                 fusedLocationProviderAdapter.requestLocationUpdates()
@@ -69,7 +70,4 @@ class LocationProvider(private val activity: Activity) {
         fusedLocationProviderAdapter.stopLocationUpdates()
     }
 
-    fun onDestroy() {
-        locationChannel.close()
-    }
 }

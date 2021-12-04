@@ -1,4 +1,4 @@
-package com.ibashniak.weatherapp.network.processor
+package com.ibashniak.weatherapp.data
 
 class BeaufortScaleTable {
     companion object {

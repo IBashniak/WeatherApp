@@ -1,6 +1,7 @@
 package com.ibashniak.weatherapp.network.processor
 
-import di.appModules
+import com.ibashniak.weatherapp.data.BeaufortScaleTable
+import com.ibashniak.weatherapp.di.appModules
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.BeforeClass

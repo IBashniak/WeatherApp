@@ -2,7 +2,7 @@ package com.ibashniak.weatherapp
 
 import android.app.Application
 import android.util.Log
-import di.appModules
+import com.ibashniak.weatherapp.di.appModules
 import org.koin.core.context.startKoin
 
 class WeatherApp  : Application() {

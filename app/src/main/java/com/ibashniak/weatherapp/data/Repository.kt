@@ -6,25 +6,31 @@ import android.content.res.Resources
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.ibashniak.weatherapp.BuildConfig
 import com.ibashniak.weatherapp.R
+import com.ibashniak.weatherapp.location.LocationProvider
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
-import com.ibashniak.weatherapp.network.icon.api.DownloadClient
 import com.ibashniak.weatherapp.network.icon.api.IconApi
 import com.ibashniak.weatherapp.network.icon.api.IconApi.Companion.FILE_NAME_END
-import com.ibashniak.weatherapp.network.processor.BeaufortScaleTable
+import com.ibashniak.weatherapp.network.icon.api.IconDownloadClient
+import com.ibashniak.weatherapp.network.weather.api.WeatherApi
+import com.ibashniak.weatherapp.network.weather.api.WeatherDownloadClient
 import kotlinx.coroutines.*
 import okhttp3.ResponseBody
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.io.*
+import java.util.*
 
 
-class Repository(private val res: Resources, private val cntxt: Context) : KoinComponent {
-    private var coroutineScope = createCoroutineScope()
-    private fun createCoroutineScope() = CoroutineScope(Job() + Dispatchers.IO)
-
-    private val tableBeaufortScale: BeaufortScaleTable by inject()
-    private val downloadClient: DownloadClient by inject()
+class Repository(
+    private val res: Resources,
+    private val cntxt: Context,
+    private val tableBeaufortScale: BeaufortScaleTable,
+    private val iconDownloadClient: IconDownloadClient,
+    private val locationProvider: LocationProvider,
+    private var coroutineScope :CoroutineScope
+) : KoinComponent {
+    private val weatherDownloadClient = WeatherDownloadClient()
 
     private val _weatherNow = MutableLiveData<CurrentWeather>(null)
     private val _progressBarVisibility =
@@ -34,11 +40,16 @@ class Repository(private val res: Resources, private val cntxt: Context) : KoinC
     val currentWeather: LiveData<CurrentWeather> = _weatherNow
     val progressBarVisibility: LiveData<Int> = _progressBarVisibility
 
+    init {
+        Log.d(TAG, "init: ")
+        init()
+    }
+
     private fun iconFileName(weatherIcon: String): String =
         cntxt.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
 
 
-    fun onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
+    private fun onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
         Log.d(TAG, "responseHandler")
 
         _progressBarVisibility.value = android.view.View.GONE
@@ -55,7 +66,7 @@ class Repository(private val res: Resources, private val cntxt: Context) : KoinC
 
         coroutineScope.launch() {
             if (!checkWeatherIconFile(icon)) {
-                val resp = downloadClient.client()
+                val resp = iconDownloadClient.client()
                     .getIcon(IconApi.iconUrl(icon).toString())
                 Log.d(TAG, "resp.isSuccessful  = ${resp.isSuccessful} ")
                 resp.body()?.let { writeIconFileToDisk(it, icon) }
@@ -75,11 +86,6 @@ class Repository(private val res: Resources, private val cntxt: Context) : KoinC
                 Log.d(TAG, "_progressBarVisibility.value  = ${progressBarVisibility.value} ")
             }
         }
-    }
-
-    fun setProgressBarVisibility(visible: Boolean) {
-        _progressBarVisibility.value =
-            if (visible) android.view.View.VISIBLE else android.view.View.GONE
     }
 
     private fun checkWeatherIconFile(weatherIcon: String): Boolean {
@@ -127,6 +133,46 @@ class Repository(private val res: Resources, private val cntxt: Context) : KoinC
             }
         } catch (e: IOException) {
             false
+        }
+    }
+
+    private fun init (){
+        Log.d(TAG, "init: ")
+        coroutineScope.launch() {
+
+            locationProvider.locationChannel.getLocation().also { location ->
+                val lang = Locale.getDefault().language
+                Log.d(TAG, "ff: location")
+                val response = weatherDownloadClient.client().requestWeather(WeatherApi.weatherUrl(lang, location).toString())
+                _progressBarVisibility.value = android.view.View.VISIBLE
+
+                with(response) {
+                    val resp = body()?.string()
+
+                    val data = CurrentWeatherResponse.toObject(resp.toString())
+                    Log.d(
+                        TAG,
+                        "requestWeather: body $data \nmessage resp __ $resp \n" +
+                                "isSuccessful $isSuccessful  " +
+                                "BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
+                    )
+                    if (BuildConfig.BUILD_TYPE == "debug") {
+                        Log.d(
+                            TAG,
+                            "requestWeather: networkResponse ${toString()}"
+                        )
+                    }
+
+                    if (isSuccessful && code() == 200) {
+                        Log.d(TAG, "requestWeather: responseChannel.send")
+                        withContext(Dispatchers.Main) {
+                            _progressBarVisibility.value = android.view.View.GONE
+                            onCurrentWeatherResponse(data)
+                        }
+                        return@launch
+                    }
+                }
+            }
         }
     }
 }
