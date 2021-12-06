@@ -118,6 +118,7 @@
                 android:visibility="visible"
                 app:srcCompat="@android:drawable/ic_menu_compass"
                 app:weatherIcon="@{repository.currentWeather.icon}"
+                tools:ignore="ImageContrastCheck"
                 tools:visibility="visible" />
 
 

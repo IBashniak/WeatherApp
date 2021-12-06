@@ -6,5 +6,7 @@ import androidx.databinding.BindingAdapter
 
 @BindingAdapter("app:weatherIcon")
 fun loadImage(view: ImageView?, pathToIcon: String?) {
-    view?.setImageBitmap(BitmapFactory.decodeFile(pathToIcon))
+    if (pathToIcon !== null && view != null) {
+        view.setImageBitmap(BitmapFactory.decodeFile(pathToIcon))
+    }
 }

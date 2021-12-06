@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         coroutineScope.launch(Dispatchers.Main) {
             locationProvider.startLocationUpdates()
         }
+        repo.startUpdate()
         val availability = GoogleApiAvailability.getInstance()
 
         val isGooglePlayServicesAvailable = availability.isGooglePlayServicesAvailable(this)

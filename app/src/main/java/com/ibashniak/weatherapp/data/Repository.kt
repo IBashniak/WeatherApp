@@ -28,7 +28,7 @@ class Repository(
     private val tableBeaufortScale: BeaufortScaleTable,
     private val iconDownloadClient: IconDownloadClient,
     private val locationProvider: LocationProvider,
-    private var coroutineScope :CoroutineScope
+    private var coroutineScope: CoroutineScope
 ) : KoinComponent {
     private val weatherDownloadClient = WeatherDownloadClient()
 
@@ -40,10 +40,6 @@ class Repository(
     val currentWeather: LiveData<CurrentWeather> = _weatherNow
     val progressBarVisibility: LiveData<Int> = _progressBarVisibility
 
-    init {
-        Log.d(TAG, "init: ")
-        init()
-    }
 
     private fun iconFileName(weatherIcon: String): String =
         cntxt.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
@@ -136,14 +132,14 @@ class Repository(
         }
     }
 
-    private fun init (){
-        Log.d(TAG, "init: ")
+    fun startUpdate() =
         coroutineScope.launch() {
-
+            Log.d(TAG, "start: ")
             locationProvider.locationChannel.getLocation().also { location ->
                 val lang = Locale.getDefault().language
                 Log.d(TAG, "ff: location")
-                val response = weatherDownloadClient.client().requestWeather(WeatherApi.weatherUrl(lang, location).toString())
+                val response = weatherDownloadClient.client()
+                    .requestWeather(WeatherApi.weatherUrl(lang, location).toString())
                 _progressBarVisibility.value = android.view.View.VISIBLE
 
                 with(response) {
@@ -174,5 +170,4 @@ class Repository(
                 }
             }
         }
-    }
 }
