@@ -11,7 +11,7 @@ import com.google.android.gms.location.*
 class FusedLocationProviderAdapter(
     activity: Activity,
     private val locationRequest: LocationRequest,
-    val locationChannel: LocationChaneel
+    val locationChannel: LocationChannel
 ) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

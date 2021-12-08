@@ -10,7 +10,7 @@ import com.ibashniak.weatherapp.MainActivity
 import com.ibashniak.weatherapp.location.PermissionChecker.Companion.checkPermission
 
 
-class LocationProvider(private val activity: Activity, val locationChannel: LocationChaneel) {
+class LocationProvider(private val activity: Activity, val locationChannel: LocationChannel) {
     private val MILLISECONDS_PER_SECOND = 1000
     private val TAG = "LocationProvider"
 

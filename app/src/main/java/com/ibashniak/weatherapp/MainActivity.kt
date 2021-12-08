@@ -11,7 +11,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.ibashniak.weatherapp.data.BeaufortScaleTable
 import com.ibashniak.weatherapp.data.Repository
 import com.ibashniak.weatherapp.databinding.ActivityMainBinding
-import com.ibashniak.weatherapp.location.LocationChaneel
+import com.ibashniak.weatherapp.location.LocationChannel
 import com.ibashniak.weatherapp.location.LocationProvider
 import com.ibashniak.weatherapp.network.icon.api.IconDownloadClient
 import com.ibashniak.weatherapp.ui.Animator
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         val tableBeaufortScale: BeaufortScaleTable by inject()
         val iconDownloadClient: IconDownloadClient by inject()
 
-        locationProvider = LocationProvider(this, LocationChaneel(coroutineScope))
+        locationProvider = LocationProvider(this, LocationChannel(coroutineScope))
         repo = Repository(
             resources,
             this,
