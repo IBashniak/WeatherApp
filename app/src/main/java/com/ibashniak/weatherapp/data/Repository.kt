@@ -2,7 +2,6 @@ package com.ibashniak.weatherapp.data
 
 import android.content.Context
 import android.content.res.Resources
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ibashniak.weatherapp.BuildConfig
@@ -20,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import org.koin.core.component.KoinComponent
+import timber.log.Timber
 import java.io.*
 import java.util.*
 
@@ -45,7 +45,7 @@ class Repository(
         cntxt.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
 
     private fun onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
-        Log.d(TAG, "responseHandler")
+        Timber.d("responseHandler")
 
         _progressBarVisibility.value = android.view.View.GONE
         val windSpeedUnits = res.getString(R.string.speed)
@@ -62,7 +62,7 @@ class Repository(
             if (!checkWeatherIconFile(icon)) {
                 val resp = iconDownloadClient.client()
                     .getIcon(IconApi.iconUrl(icon).toString())
-                Log.d(TAG, "resp.isSuccessful  = ${resp.isSuccessful} ")
+                Timber.d("resp.isSuccessful  = ${resp.isSuccessful} ")
                 resp.body()?.let { writeIconFileToDisk(it, icon) }
             }
             withContext(Dispatchers.Main) {
@@ -77,7 +77,7 @@ class Repository(
                         weather.wind.deg.toFloat(),
                         iconFileName(icon)
                     )
-                Log.d(TAG, "_progressBarVisibility.value  = ${progressBarVisibility.value} ")
+                Timber.d("_progressBarVisibility.value  = ${progressBarVisibility.value} ")
             }
         }
     }
@@ -89,9 +89,9 @@ class Repository(
         val fileExists = futureStudioIconFile.exists()
 
         if (fileExists) {
-            Log.d(TAG, "$fileName does exist.")
+            Timber.d("$fileName does exist.")
         } else {
-            Log.d(TAG, "$fileName does NOT exist.")
+            Timber.d("$fileName does NOT exist.")
         }
         return fileExists
     }
@@ -115,7 +115,7 @@ class Repository(
                     }
                     outputStream.write(fileReader, 0, read)
                     fileSizeDownloaded += read.toLong()
-                    Log.d(TAG, "file download: $fileSizeDownloaded of $fileSize")
+                    Timber.d("file download: $fileSizeDownloaded of $fileSize")
                 }
                 outputStream.flush()
                 true
@@ -130,12 +130,13 @@ class Repository(
         }
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     fun startUpdate() =
         coroutineScope.launch() {
-            Log.d(TAG, "start: ")
+            Timber.d("start: ")
             locationProvider.locationChannel.getLocation().also { location ->
                 val lang = Locale.getDefault().language
-                Log.d(TAG, "ff: location")
+                Timber.d("ff: location")
                 val response = weatherDownloadClient.client()
                     .requestWeather(WeatherApi.weatherUrl(lang, location).toString())
                 _progressBarVisibility.value = android.view.View.VISIBLE
@@ -144,21 +145,19 @@ class Repository(
                     val resp = body()?.string()
 
                     val data = CurrentWeatherResponse.toObject(resp.toString())
-                    Log.d(
-                        TAG,
+                    Timber.d(
                         "requestWeather: body $data \nmessage resp __ $resp \n" +
                             "isSuccessful $isSuccessful  " +
                             "BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
                     )
                     if (BuildConfig.BUILD_TYPE == "debug") {
-                        Log.d(
-                            TAG,
+                        Timber.d(
                             "requestWeather: networkResponse ${toString()}"
                         )
                     }
 
                     if (isSuccessful && code() == 200) {
-                        Log.d(TAG, "requestWeather: responseChannel.send")
+                        Timber.d("requestWeather: responseChannel.send")
                         withContext(Dispatchers.Main) {
                             _progressBarVisibility.value = android.view.View.GONE
                             onCurrentWeatherResponse(data)

@@ -2,7 +2,6 @@ package com.ibashniak.weatherapp
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.coroutineScope
@@ -19,12 +18,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), KoinComponent {
     companion object {
         const val CHECK_SETTINGS_CODE = 111
         const val REQUEST_LOCATION_PERMISSION = 222
-        private const val TAG = "MainActivity"
     }
 
     private lateinit var animator: Animator
@@ -63,24 +62,21 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         when (requestCode) {
             REQUEST_LOCATION_PERMISSION -> {
                 // If request is cancelled, the result arrays are empty.
-                if ((
+                if (
                     grantResults.isNotEmpty() &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    )
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+
                 ) {
-                    Log.d(
-                        TAG,
+                    Timber.d(
                         "onRequestPermissionsResult: Permission is granted. " +
                             "Continue the action or workflow in the app."
                     )
                 } else {
-                    Log.d(
-                        TAG,
+                    Timber.d(
                         "onRequestPermissionsResult: called with: requestCode =" +
                             " $requestCode,permissions = $permissions, grantResults = $grantResults"
                     )
-                    Log.d(
-                        TAG,
+                    Timber.d(
                         "onRequestPermissionsResult: Explain to the user that the feature" +
                             " is unavailable because" +
                             "the features requires a permission that the user has denied." +
@@ -106,8 +102,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         val isGooglePlayServicesAvailable = availability.isGooglePlayServicesAvailable(this)
         val apkVer = availability.getApkVersion(this)
         val clVer = availability.getClientVersion(this)
-        Log.d(
-            TAG,
+        Timber.d(
             "onResume: GoogleApiAvailability" +
                 " ${isGooglePlayServicesAvailable == ConnectionResult.SUCCESS} " +
                 "apkVer $apkVer clVer $clVer"
@@ -115,13 +110,13 @@ class MainActivity : AppCompatActivity(), KoinComponent {
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause")
+        Timber.d("onPause")
         super.onPause()
         locationProvider.stopLocationUpdates()
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy")
+        Timber.d("onDestroy")
         super.onDestroy()
     }
 }

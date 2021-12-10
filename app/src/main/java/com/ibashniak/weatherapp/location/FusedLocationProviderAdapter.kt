@@ -3,9 +3,9 @@ package com.ibashniak.weatherapp.location
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.android.gms.location.*
+import timber.log.Timber
 
 class FusedLocationProviderAdapter(
     activity: Activity,
@@ -21,7 +21,7 @@ class FusedLocationProviderAdapter(
 
     @SuppressLint("MissingPermission")
     fun requestLocationUpdates() {
-        Log.d(TAG, "requestLocationUpdates")
+        Timber.d("requestLocationUpdates")
         Looper.myLooper()?.let {
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
@@ -33,12 +33,11 @@ class FusedLocationProviderAdapter(
 
     private fun buildLocationCallBack() = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
-            Log.d(TAG, "onLocationResult")
+            Timber.d("")
             super.onLocationResult(locationResult)
             val currentLocation = locationResult.lastLocation
-            Log.d(
-                TAG,
-                "onLocationResult locations.size ${locationResult.locations.size}" +
+            Timber.d(
+                "locations.size ${locationResult.locations.size}" +
                     " locationResult.lastLocation ${currentLocation.latitude}"
             )
             locationChannel.send(currentLocation)
@@ -46,7 +45,7 @@ class FusedLocationProviderAdapter(
 
         override fun onLocationAvailability(p0: LocationAvailability) {
             super.onLocationAvailability(p0)
-            Log.d(TAG, "onLocationAvailability isLocationAvailable ${p0.isLocationAvailable}")
+            Timber.d("isLocationAvailable ${p0.isLocationAvailable}")
         }
     }
 

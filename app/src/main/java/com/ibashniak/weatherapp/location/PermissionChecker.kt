@@ -3,7 +3,6 @@ package com.ibashniak.weatherapp.location
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.ibashniak.weatherapp.MainActivity
 import com.ibashniak.weatherapp.ui.RequestPermissionDialog
@@ -11,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -27,7 +27,7 @@ class PermissionChecker {
                     permission
                 )
                 var isGPSaccessGranted = (checkSelfPermission == PackageManager.PERMISSION_GRANTED)
-                Log.d(TAG, " isGPSaccessGranted ? $isGPSaccessGranted")
+                Timber.d(" isGPSaccessGranted ? $isGPSaccessGranted")
                 if (isGPSaccessGranted) {
                     continuation.resume(true)
                 } else {
@@ -38,8 +38,7 @@ class PermissionChecker {
                             activity,
                             Manifest.permission.ACCESS_COARSE_LOCATION
                         )
-                    Log.d(
-                        TAG,
+                    Timber.d(
                         " Check Permissions Now shouldShowRequestPermissionRationale $shouldShowRequestPermissionRationale"
                     )
                     if (shouldShowRequestPermissionRationale) {
@@ -54,13 +53,13 @@ class PermissionChecker {
                                 )
                             }.onFailure {
                                 when (it) {
-                                    is Exception -> Log.d(TAG, "${it.message}")
+                                    is Exception -> Timber.d("${it.message}")
                                     else -> continuation.resumeWithException(it)
                                 }
                             }
                         }
                     } else {
-                        Log.d(TAG, "shouldShowRequestPermissionRationale =$shouldShowRequestPermissionRationale ")
+                        Timber.d("shouldShowRequestPermissionRationale =$shouldShowRequestPermissionRationale ")
                     }
                 }
             }

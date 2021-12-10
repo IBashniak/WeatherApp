@@ -2,8 +2,8 @@ package com.ibashniak.weatherapp.ui
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.util.Log
 import com.ibashniak.weatherapp.R
+import timber.log.Timber
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -19,11 +19,11 @@ class RequestPermissionDialog {
                     val builder = AlertDialog.Builder(it)
                     builder.apply {
                         setPositiveButton("Yes") { _, _ ->
-                            Log.d(TAG, "User clicked OK button")
+                            Timber.d("User clicked OK button")
                             continuation.resume(true)
                         }
                         setNegativeButton("NO") { _, _ ->
-                            Log.d(TAG, "User cancelled the dialog")
+                            Timber.d("User cancelled the dialog")
                             continuation.resumeWithException(Exception("Permission denied"))
                         }
                     }

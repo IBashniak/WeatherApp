@@ -3,11 +3,11 @@ package com.ibashniak.weatherapp.location
 import android.Manifest
 import android.app.Activity
 import android.content.IntentSender
-import android.util.Log
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.ibashniak.weatherapp.MainActivity
 import com.ibashniak.weatherapp.location.PermissionChecker.Companion.checkPermission
+import timber.log.Timber
 
 class LocationProvider(private val activity: Activity, val locationChannel: LocationChannel) {
     private val MILLISECONDS_PER_SECOND = 1000
@@ -36,18 +36,17 @@ class LocationProvider(private val activity: Activity, val locationChannel: Loca
     suspend fun startLocationUpdates() {
         try {
             val locationSettingsResponse = locationSettingsAdapter.getLocationSettingsAsync()
-            Log.d(
-                TAG,
+            Timber.d(
                 "isGpsPresent ${locationSettingsResponse.locationSettingsStates?.isGpsPresent}"
             )
             if (checkPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                Log.d(TAG, "requestLocationUpdates")
+                Timber.d("requestLocationUpdates")
                 fusedLocationProviderAdapter.requestLocationUpdates()
             }
         } catch (exception: Exception) {
-            Log.d(TAG, "Task<LocationSettingsResponse> addOnFailureListener ${exception.message}")
+            Timber.d("Task<LocationSettingsResponse> addOnFailureListener ${exception.message}")
             if (exception is ResolvableApiException) {
-                Log.d(TAG, "ResolvableApiException ${exception.resolution}")
+                Timber.d("ResolvableApiException ${exception.resolution}")
                 // Location settings are not satisfied, but this can be fixed
                 // by showing the user a dialog.
                 try {

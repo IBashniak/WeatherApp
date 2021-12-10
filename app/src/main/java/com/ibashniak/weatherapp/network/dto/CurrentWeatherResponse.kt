@@ -1,7 +1,7 @@
 package com.ibashniak.weatherapp.network.dto
 
-import android.util.Log
 import com.google.gson.Gson
+import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -38,7 +38,7 @@ data class CurrentWeatherResponse(
         }
 
         fun toObject(stringValue: String): CurrentWeatherResponse {
-            Log.d("toObject", stringValue)
+            Timber.d(stringValue)
             return Gson().fromJson(stringValue, CurrentWeatherResponse::class.java)
         }
     }
