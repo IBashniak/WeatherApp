@@ -18,21 +18,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
-import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.io.*
 import java.util.*
 
 class Repository(
-    private val res: Resources,
     private val cntxt: Context,
     private val tableBeaufortScale: BeaufortScaleTable,
-    private val iconDownloadClient: IconDownloadClient,
-    private val locationProvider: LocationProvider,
-    private var coroutineScope: CoroutineScope
-) : KoinComponent {
+    private val iconDownloadClient: IconDownloadClient
+) {
     private val weatherDownloadClient = WeatherDownloadClient()
-
+    private val res: Resources = cntxt.resources
     private val _weatherNow = MutableLiveData<CurrentWeather>(null)
     private val _progressBarVisibility =
         MutableLiveData(1).apply { value = android.view.View.VISIBLE }
@@ -44,8 +40,8 @@ class Repository(
     private fun iconFileName(weatherIcon: String): String =
         cntxt.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
 
-    private fun onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
-        Timber.d("responseHandler")
+    private fun CoroutineScope.onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
+        Timber.d("")
 
         _progressBarVisibility.value = android.view.View.GONE
         val windSpeedUnits = res.getString(R.string.speed)
@@ -58,7 +54,7 @@ class Repository(
         val beaufort = res.getStringArray(R.array.Beaufort)
         val icon = weather.weather[0].icon
 
-        coroutineScope.launch() {
+        launch {
             if (!checkWeatherIconFile(icon)) {
                 val resp = iconDownloadClient.client()
                     .getIcon(IconApi.iconUrl(icon).toString())
@@ -131,8 +127,8 @@ class Repository(
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    fun startUpdate() =
-        coroutineScope.launch() {
+    suspend fun startUpdate(locationProvider: LocationProvider) =
+        with(Dispatchers.Default) {
             Timber.d("start: ")
             locationProvider.locationChannel.getLocation().also { location ->
                 val lang = Locale.getDefault().language
@@ -162,7 +158,6 @@ class Repository(
                             _progressBarVisibility.value = android.view.View.GONE
                             onCurrentWeatherResponse(data)
                         }
-                        return@launch
                     }
                 }
             }

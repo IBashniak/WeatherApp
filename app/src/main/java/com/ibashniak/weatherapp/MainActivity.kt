@@ -7,12 +7,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.coroutineScope
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.ibashniak.weatherapp.data.BeaufortScaleTable
 import com.ibashniak.weatherapp.data.Repository
 import com.ibashniak.weatherapp.databinding.ActivityMainBinding
 import com.ibashniak.weatherapp.location.LocationChannel
 import com.ibashniak.weatherapp.location.LocationProvider
-import com.ibashniak.weatherapp.network.icon.api.IconDownloadClient
 import com.ibashniak.weatherapp.ui.Animator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,22 +29,12 @@ class MainActivity : AppCompatActivity(), KoinComponent {
     private val coroutineScope = lifecycle.coroutineScope
 
     private lateinit var activityMainBinding: ActivityMainBinding
-    private lateinit var repo: Repository
+    private val repo: Repository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val tableBeaufortScale: BeaufortScaleTable by inject()
-        val iconDownloadClient: IconDownloadClient by inject()
 
         locationProvider = LocationProvider(this, LocationChannel(coroutineScope))
-        repo = Repository(
-            resources,
-            this,
-            tableBeaufortScale,
-            iconDownloadClient,
-            locationProvider,
-            coroutineScope
-        )
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         activityMainBinding.lifecycleOwner = this
@@ -95,8 +83,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         super.onResume()
         coroutineScope.launch(Dispatchers.Main) {
             locationProvider.startLocationUpdates()
+            repo.startUpdate(locationProvider)
         }
-        repo.startUpdate()
         val availability = GoogleApiAvailability.getInstance()
 
         val isGooglePlayServicesAvailable = availability.isGooglePlayServicesAvailable(this)

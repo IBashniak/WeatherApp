@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import com.ibashniak.weatherapp.di.appModules
 import com.ibashniak.weatherapp.log.LogTree
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
@@ -13,6 +14,7 @@ class WeatherApp : Application() {
         super.onCreate()
         setupLogging()
         startKoin {
+            androidContext(this@WeatherApp)
             modules(appModules)
         }
     }
