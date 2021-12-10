@@ -43,11 +43,24 @@ android {
 
 }
 
+ktlint {
+    debug.set(true)
+    disabledRules.set(["no-wildcard-imports"])
+}
+
+task installGitHook(type: Copy) {
+    from new File(rootProject.rootDir, 'pre-commit')
+    into { new File(rootProject.rootDir, '.git/hooks') }
+    fileMode 0777
+}
+tasks.getByPath(':app:preBuild').dependsOn installGitHook
+
 static def getApiKey() {
     Properties props = new Properties()
     props.load(new FileInputStream(new File('secrets.properties')))
     return props['API_KEY']
 }
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
