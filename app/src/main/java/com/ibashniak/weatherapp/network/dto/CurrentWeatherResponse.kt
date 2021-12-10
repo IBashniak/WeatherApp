@@ -37,7 +37,6 @@ data class CurrentWeatherResponse(
             return date.format(formatter)
         }
 
-
         fun toObject(stringValue: String): CurrentWeatherResponse {
             Log.d("toObject", stringValue)
             return Gson().fromJson(stringValue, CurrentWeatherResponse::class.java)

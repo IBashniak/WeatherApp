@@ -1,6 +1,5 @@
 package com.ibashniak.weatherapp.network.weather.api
 
-
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,7 +23,7 @@ class WeatherDownloadClient {
                 .connectTimeout(TIMEOUT_IN_SECONDS.toLong(), TimeUnit.SECONDS)
                 .writeTimeout(TIMEOUT_IN_SECONDS.toLong(), TimeUnit.SECONDS)
                 .readTimeout(TIMEOUT_IN_SECONDS.toLong(), TimeUnit.SECONDS)
-                .addInterceptor(loggingInterceptor)  //  okhttp3.OkHttpClient
+                .addInterceptor(loggingInterceptor) //  okhttp3.OkHttpClient
                 .build()
 
         return Retrofit.Builder()

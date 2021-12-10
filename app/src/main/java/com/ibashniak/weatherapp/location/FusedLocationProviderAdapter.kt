@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.android.gms.location.*
 
-
 class FusedLocationProviderAdapter(
     activity: Activity,
     private val locationRequest: LocationRequest,
@@ -38,8 +37,9 @@ class FusedLocationProviderAdapter(
             super.onLocationResult(locationResult)
             val currentLocation = locationResult.lastLocation
             Log.d(
-                TAG, "onLocationResult locations.size ${locationResult.locations.size}" +
-                        " locationResult.lastLocation ${currentLocation.latitude}"
+                TAG,
+                "onLocationResult locations.size ${locationResult.locations.size}" +
+                    " locationResult.lastLocation ${currentLocation.latitude}"
             )
             locationChannel.send(currentLocation)
         }

@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-
 class MainActivity : AppCompatActivity(), KoinComponent {
     companion object {
         const val CHECK_SETTINGS_CODE = 111
@@ -34,7 +33,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
 
     private lateinit var activityMainBinding: ActivityMainBinding
     private lateinit var repo: Repository
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,25 +63,30 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         when (requestCode) {
             REQUEST_LOCATION_PERMISSION -> {
                 // If request is cancelled, the result arrays are empty.
-                if ((grantResults.isNotEmpty() &&
-                            grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                if ((
+                    grantResults.isNotEmpty() &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    )
                 ) {
                     Log.d(
-                        TAG, "onRequestPermissionsResult: Permission is granted. " +
-                                "Continue the action or workflow in the app."
+                        TAG,
+                        "onRequestPermissionsResult: Permission is granted. " +
+                            "Continue the action or workflow in the app."
                     )
                 } else {
                     Log.d(
-                        TAG, "onRequestPermissionsResult: called with: requestCode =" +
-                                " $requestCode,permissions = $permissions, grantResults = $grantResults"
+                        TAG,
+                        "onRequestPermissionsResult: called with: requestCode =" +
+                            " $requestCode,permissions = $permissions, grantResults = $grantResults"
                     )
                     Log.d(
-                        TAG, "onRequestPermissionsResult: Explain to the user that the feature" +
-                                " is unavailable because" +
-                                "the features requires a permission that the user has denied." +
-                                "At the same time, respect the user's decision. Don't link to" +
-                                "system settings in an effort to convince the user to change" +
-                                "their decision."
+                        TAG,
+                        "onRequestPermissionsResult: Explain to the user that the feature" +
+                            " is unavailable because" +
+                            "the features requires a permission that the user has denied." +
+                            "At the same time, respect the user's decision. Don't link to" +
+                            "system settings in an effort to convince the user to change" +
+                            "their decision."
                     )
                 }
                 return
@@ -91,7 +94,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -105,9 +107,10 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         val apkVer = availability.getApkVersion(this)
         val clVer = availability.getClientVersion(this)
         Log.d(
-            TAG, "onResume: GoogleApiAvailability" +
-                    " ${isGooglePlayServicesAvailable == ConnectionResult.SUCCESS} " +
-                    "apkVer $apkVer clVer $clVer"
+            TAG,
+            "onResume: GoogleApiAvailability" +
+                " ${isGooglePlayServicesAvailable == ConnectionResult.SUCCESS} " +
+                "apkVer $apkVer clVer $clVer"
         )
     }
 
@@ -121,5 +124,4 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
     }
-
 }

@@ -8,11 +8,10 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Url
 
-
 interface WeatherApi {
 
     @GET
-    suspend fun requestWeather(@Url fileUrl:String): Response<ResponseBody>
+    suspend fun requestWeather(@Url fileUrl: String): Response<ResponseBody>
 
     companion object {
         private const val CURRENT_WEATHER_METHOD = "weather"
@@ -22,16 +21,16 @@ interface WeatherApi {
         private const val TIMEOUT_IN_SECONDS = 2
 
         fun weatherUrl(lang: String, location: Location) =
-         HttpUrl.Builder()
-            .scheme("https")
-            .host(ENDPOINT)
-            .addPathSegments("data/2.5")
-            .addPathSegment(CURRENT_WEATHER_METHOD)
-            .addQueryParameter(API_KEY_STRING, API_KEY)
-            .addQueryParameter("lat", "${location.latitude}")
-            .addQueryParameter("lon", "${location.longitude}")
-            .addQueryParameter("lang", lang)
-            .addQueryParameter("units", "metric")
-            .build()
+            HttpUrl.Builder()
+                .scheme("https")
+                .host(ENDPOINT)
+                .addPathSegments("data/2.5")
+                .addPathSegment(CURRENT_WEATHER_METHOD)
+                .addQueryParameter(API_KEY_STRING, API_KEY)
+                .addQueryParameter("lat", "${location.latitude}")
+                .addQueryParameter("lon", "${location.longitude}")
+                .addQueryParameter("lang", lang)
+                .addQueryParameter("units", "metric")
+                .build()
     }
 }

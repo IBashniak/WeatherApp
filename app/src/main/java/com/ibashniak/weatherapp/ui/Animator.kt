@@ -11,15 +11,17 @@ class Animator(
     currentWeather: LiveData<CurrentWeather>
 ) {
     init {
-        currentWeather.observe(lifecycleOwner,
+        currentWeather.observe(
+            lifecycleOwner,
             { weather ->
                 if (weather != null) {
                     arrow.rotation = 0F
                     arrow.animate().rotation(circle + weather.windDegree).duration = duration
                 }
-            })
+            }
+        )
     }
-    companion object{
+    companion object {
         const val circle = 360
         const val duration = 1500L
     }

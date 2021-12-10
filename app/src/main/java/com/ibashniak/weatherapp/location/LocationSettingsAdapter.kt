@@ -21,5 +21,4 @@ class LocationSettingsAdapter(activity: Activity, locationRequest: LocationReque
             continuation.resumeWithException(exception)
         }
     }
-
 }

@@ -11,7 +11,6 @@ import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 
-
 class BeaufortScaleTableTest : KoinComponent {
     private val sut: BeaufortScaleTable by inject()
     private val beaufortString: Array<String> =
@@ -64,7 +63,6 @@ class BeaufortScaleTableTest : KoinComponent {
     fun `when speed is NaN then throw AssertionError`() {
         sut.getBeaufortString(Double.NaN, beaufortString)
     }
-
 
     @Test(expected = AssertionError::class)
     fun `when speed is negative then throw AssertionError`() {

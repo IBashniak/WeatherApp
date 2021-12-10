@@ -8,14 +8,13 @@ import kotlinx.coroutines.launch
 class LocationChannel(private val scope: CoroutineScope) {
     private val channel = Channel<Location>()
 
-    fun send(data : Location){
+    fun send(data: Location) {
         scope.launch {
             channel.send(data)
         }
     }
 
-    suspend fun getLocation() : Location
-    {
+    suspend fun getLocation(): Location {
         return channel.receive()
     }
 }

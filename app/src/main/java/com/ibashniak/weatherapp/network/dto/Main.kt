@@ -1,6 +1,5 @@
 package com.ibashniak.weatherapp.network.dto
 
-
 data class Main(
     val humidity: Int,
     val pressure: Int,

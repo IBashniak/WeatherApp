@@ -6,11 +6,10 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Url
 
-
 interface IconApi {
 
     @GET
-    suspend fun getIcon(@Url fileUrl:String): Response<ResponseBody>
+    suspend fun getIcon(@Url fileUrl: String): Response<ResponseBody>
 
     companion object {
         const val ENDPOINT = "openweathermap.org"

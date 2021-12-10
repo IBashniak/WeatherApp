@@ -7,6 +7,6 @@ data class CurrentWeather(
     val tempRange: String,
     val humidity: String,
     val windScale: String,
-    val windDegree:Float,
-    val icon:String
+    val windDegree: Float,
+    val icon: String
 )

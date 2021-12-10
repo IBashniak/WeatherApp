@@ -9,7 +9,6 @@ import com.google.android.gms.location.LocationRequest
 import com.ibashniak.weatherapp.MainActivity
 import com.ibashniak.weatherapp.location.PermissionChecker.Companion.checkPermission
 
-
 class LocationProvider(private val activity: Activity, val locationChannel: LocationChannel) {
     private val MILLISECONDS_PER_SECOND = 1000
     private val TAG = "LocationProvider"
@@ -21,7 +20,6 @@ class LocationProvider(private val activity: Activity, val locationChannel: Loca
     private val UPDATE_INTERVAL_IN_MILLISECONDS =
         MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS.toLong()
     private val locationRequest: LocationRequest
-
 
     init {
         locationRequest = LocationRequest.create().apply {
@@ -69,5 +67,4 @@ class LocationProvider(private val activity: Activity, val locationChannel: Loca
     fun stopLocationUpdates() {
         fusedLocationProviderAdapter.stopLocationUpdates()
     }
-
 }

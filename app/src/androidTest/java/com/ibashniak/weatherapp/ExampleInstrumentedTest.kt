@@ -1,6 +1,5 @@
 package com.ibashniak.weatherapp
 
-
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
 import org.junit.Test

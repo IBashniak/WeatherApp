@@ -1,6 +1,5 @@
 package com.ibashniak.weatherapp.data
 
-
 import android.content.Context
 import android.content.res.Resources
 import android.util.Log
@@ -15,12 +14,14 @@ import com.ibashniak.weatherapp.network.icon.api.IconApi.Companion.FILE_NAME_END
 import com.ibashniak.weatherapp.network.icon.api.IconDownloadClient
 import com.ibashniak.weatherapp.network.weather.api.WeatherApi
 import com.ibashniak.weatherapp.network.weather.api.WeatherDownloadClient
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import org.koin.core.component.KoinComponent
 import java.io.*
 import java.util.*
-
 
 class Repository(
     private val res: Resources,
@@ -40,10 +41,8 @@ class Repository(
     val currentWeather: LiveData<CurrentWeather> = _weatherNow
     val progressBarVisibility: LiveData<Int> = _progressBarVisibility
 
-
     private fun iconFileName(weatherIcon: String): String =
         cntxt.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
-
 
     private fun onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
         Log.d(TAG, "responseHandler")
@@ -56,9 +55,8 @@ class Repository(
         val min = res.getString(R.string.min)
         val max = res.getString(R.string.max)
 
-        val Beaufort = res.getStringArray(R.array.Beaufort)
+        val beaufort = res.getStringArray(R.array.Beaufort)
         val icon = weather.weather[0].icon
-
 
         coroutineScope.launch() {
             if (!checkWeatherIconFile(icon)) {
@@ -75,7 +73,7 @@ class Repository(
                         "%.1f".format(weather.main.temp) + "°C $real" + " \n${"%.1f".format(weather.main.feels_like)}°C  $comfort",
                         "${weather.main.temp_min}$min ${weather.main.temp_max}$max",
                         "$humidity ${weather.main.humidity}%",
-                        " ${tableBeaufortScale.getBeaufortString(weather.wind.speed, Beaufort)}",
+                        " ${tableBeaufortScale.getBeaufortString(weather.wind.speed, beaufort)}",
                         weather.wind.deg.toFloat(),
                         iconFileName(icon)
                     )
@@ -149,8 +147,8 @@ class Repository(
                     Log.d(
                         TAG,
                         "requestWeather: body $data \nmessage resp __ $resp \n" +
-                                "isSuccessful $isSuccessful  " +
-                                "BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
+                            "isSuccessful $isSuccessful  " +
+                            "BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
                     )
                     if (BuildConfig.BUILD_TYPE == "debug") {
                         Log.d(

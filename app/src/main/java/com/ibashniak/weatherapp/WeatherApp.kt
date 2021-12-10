@@ -5,7 +5,7 @@ import android.util.Log
 import com.ibashniak.weatherapp.di.appModules
 import org.koin.core.context.startKoin
 
-class WeatherApp  : Application() {
+class WeatherApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -14,5 +14,4 @@ class WeatherApp  : Application() {
             modules(appModules)
         }
     }
-
 }
