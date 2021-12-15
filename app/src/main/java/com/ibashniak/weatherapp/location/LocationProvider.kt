@@ -11,12 +11,7 @@ import timber.log.Timber
 
 class LocationProvider(private val activity: Activity, val locationChannel: LocationChannel) {
     private val MILLISECONDS_PER_SECOND = 1000
-    private val TAG = "LocationProvider"
-
-    // колличество секунд для обновелния
     private val UPDATE_INTERVAL_IN_SECONDS = 60 * 5
-
-    // интервал обновления в милисекундах
     private val UPDATE_INTERVAL_IN_MILLISECONDS =
         MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS.toLong()
     private val locationRequest: LocationRequest

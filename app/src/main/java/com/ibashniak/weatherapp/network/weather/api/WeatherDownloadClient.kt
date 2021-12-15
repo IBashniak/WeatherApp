@@ -23,7 +23,7 @@ class WeatherDownloadClient {
                 .connectTimeout(TIMEOUT_IN_SECONDS.toLong(), TimeUnit.SECONDS)
                 .writeTimeout(TIMEOUT_IN_SECONDS.toLong(), TimeUnit.SECONDS)
                 .readTimeout(TIMEOUT_IN_SECONDS.toLong(), TimeUnit.SECONDS)
-                .addInterceptor(loggingInterceptor) //  okhttp3.OkHttpClient
+                .addInterceptor(loggingInterceptor)
                 .build()
 
         return Retrofit.Builder()

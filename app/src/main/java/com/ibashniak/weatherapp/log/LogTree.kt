@@ -9,11 +9,6 @@ internal open class LogTree(private val logLevel: Int) : Timber.DebugTree() {
     }
 
     override fun createStackElementTag(element: StackTraceElement): String {
-        return String.format(
-            "%s:%d %s",
-            element.methodName,
-            element.lineNumber,
-            super.createStackElementTag(element)
-        )
+        return "(${element.fileName}:${element.lineNumber})_${element.methodName}"
     }
 }

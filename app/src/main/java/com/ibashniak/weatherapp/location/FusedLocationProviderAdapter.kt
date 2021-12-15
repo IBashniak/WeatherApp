@@ -15,8 +15,6 @@ class FusedLocationProviderAdapter(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     private var fusedLocationProviderClient = FusedLocationProviderClient(activity)
-    private val TAG = "FusedLocationProvider"
-
     private val locationCallBack = buildLocationCallBack()
 
     @SuppressLint("MissingPermission")

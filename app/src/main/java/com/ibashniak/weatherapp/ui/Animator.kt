@@ -16,13 +16,13 @@ class Animator(
             { weather ->
                 if (weather != null) {
                     arrow.rotation = 0F
-                    arrow.animate().rotation(circle + weather.windDegree).duration = duration
+                    arrow.animate().rotation(CIRCLE + weather.windDegree).duration = DURATION
                 }
             }
         )
     }
     companion object {
-        const val circle = 360
-        const val duration = 1500L
+        const val CIRCLE = 360
+        const val DURATION = 1500L
     }
 }

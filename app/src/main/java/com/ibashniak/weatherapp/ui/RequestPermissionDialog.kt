@@ -11,7 +11,6 @@ import kotlin.coroutines.suspendCoroutine
 class RequestPermissionDialog {
 
     companion object {
-        private const val TAG = "RequestPermissionDialog"
         suspend fun requestPermission(activity: Activity) =
             suspendCoroutine<Boolean> { continuation ->
 

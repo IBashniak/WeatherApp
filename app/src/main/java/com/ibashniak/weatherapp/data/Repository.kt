@@ -23,22 +23,20 @@ import java.io.*
 import java.util.*
 
 class Repository(
-    private val cntxt: Context,
+    private val context: Context,
     private val tableBeaufortScale: BeaufortScaleTable,
     private val iconDownloadClient: IconDownloadClient
 ) {
     private val weatherDownloadClient = WeatherDownloadClient()
-    private val res: Resources = cntxt.resources
+    private val res: Resources = context.resources
     private val _weatherNow = MutableLiveData<CurrentWeather>(null)
     private val _progressBarVisibility =
         MutableLiveData(1).apply { value = android.view.View.VISIBLE }
-    private val TAG = "Repository"
-
     val currentWeather: LiveData<CurrentWeather> = _weatherNow
     val progressBarVisibility: LiveData<Int> = _progressBarVisibility
 
     private fun iconFileName(weatherIcon: String): String =
-        cntxt.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
+        context.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
 
     private fun CoroutineScope.onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
         Timber.d("")
@@ -132,7 +130,7 @@ class Repository(
             Timber.d("start: ")
             locationProvider.locationChannel.getLocation().also { location ->
                 val lang = Locale.getDefault().language
-                Timber.d("ff: location")
+                Timber.d("$location")
                 val response = weatherDownloadClient.client()
                     .requestWeather(WeatherApi.weatherUrl(lang, location).toString())
                 _progressBarVisibility.value = android.view.View.VISIBLE

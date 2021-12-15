@@ -18,8 +18,6 @@ import kotlin.coroutines.suspendCoroutine
 class PermissionChecker {
 
     companion object {
-        private const val TAG = "PermissionChecker"
-
         suspend fun checkPermission(activity: Activity, permission: String) =
             suspendCoroutine<Boolean> { continuation ->
                 val checkSelfPermission = ActivityCompat.checkSelfPermission(
