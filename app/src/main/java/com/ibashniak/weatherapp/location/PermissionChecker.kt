@@ -25,7 +25,7 @@ class PermissionChecker {
                     permission
                 )
                 var isGPSaccessGranted = (checkSelfPermission == PackageManager.PERMISSION_GRANTED)
-                Timber.d(" isGPSaccessGranted ? $isGPSaccessGranted")
+                Timber.d("isGPSaccessGranted ? $isGPSaccessGranted")
                 if (isGPSaccessGranted) {
                     continuation.resume(true)
                 } else {
@@ -37,7 +37,7 @@ class PermissionChecker {
                             Manifest.permission.ACCESS_COARSE_LOCATION
                         )
                     Timber.d(
-                        " Check Permissions Now shouldShowRequestPermissionRationale $shouldShowRequestPermissionRationale"
+                        "Check Permissions Now shouldShowRequestPermissionRationale $shouldShowRequestPermissionRationale"
                     )
                     if (shouldShowRequestPermissionRationale) {
                         CoroutineScope(Dispatchers.Main + Job()).launch {

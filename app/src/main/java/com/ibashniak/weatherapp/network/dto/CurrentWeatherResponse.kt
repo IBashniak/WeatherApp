@@ -1,7 +1,5 @@
 package com.ibashniak.weatherapp.network.dto
 
-import com.google.gson.Gson
-import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -35,11 +33,6 @@ data class CurrentWeatherResponse(
                 LocalDateTime.ofEpochSecond(dt, 0, ZoneOffset.ofTotalSeconds(timezone))
             val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
             return date.format(formatter)
-        }
-
-        fun toObject(stringValue: String): CurrentWeatherResponse {
-            Timber.d(stringValue)
-            return Gson().fromJson(stringValue, CurrentWeatherResponse::class.java)
         }
     }
 }

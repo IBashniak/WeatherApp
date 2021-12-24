@@ -10,9 +10,7 @@ import com.ibashniak.weatherapp.location.LocationProvider
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
 import com.ibashniak.weatherapp.network.icon.api.IconApi
 import com.ibashniak.weatherapp.network.icon.api.IconApi.Companion.FILE_NAME_END
-import com.ibashniak.weatherapp.network.icon.api.IconDownloadClient
 import com.ibashniak.weatherapp.network.weather.api.WeatherApi
-import com.ibashniak.weatherapp.network.weather.api.WeatherDownloadClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,14 +18,13 @@ import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import timber.log.Timber
 import java.io.*
-import java.util.*
 
 class Repository(
     private val context: Context,
     private val tableBeaufortScale: BeaufortScaleTable,
-    private val iconDownloadClient: IconDownloadClient
+    private val weatherApi: WeatherApi,
+    private val iconApi: IconApi
 ) {
-    private val weatherDownloadClient = WeatherDownloadClient()
     private val res: Resources = context.resources
     private val _weatherNow = MutableLiveData<CurrentWeather>(null)
     private val _progressBarVisibility =
@@ -54,8 +51,7 @@ class Repository(
 
         launch {
             if (!checkWeatherIconFile(icon)) {
-                val resp = iconDownloadClient.client()
-                    .getIcon(IconApi.iconUrl(icon).toString())
+                val resp = iconApi.getIcon(icon)
                 Timber.d("resp.isSuccessful  = ${resp.isSuccessful} ")
                 resp.body()?.let { writeIconFileToDisk(it, icon) }
             }
@@ -109,7 +105,7 @@ class Repository(
                     }
                     outputStream.write(fileReader, 0, read)
                     fileSizeDownloaded += read.toLong()
-                    Timber.d("file download: $fileSizeDownloaded of $fileSize")
+                    Timber.d("$fileSizeDownloaded of $fileSize")
                 }
                 outputStream.flush()
                 true
@@ -127,36 +123,22 @@ class Repository(
     @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun startUpdate(locationProvider: LocationProvider) =
         with(Dispatchers.Default) {
-            Timber.d("start: ")
+            Timber.d("")
             locationProvider.locationChannel.getLocation().also { location ->
-                val lang = Locale.getDefault().language
                 Timber.d("$location")
-                val response = weatherDownloadClient.client()
-                    .requestWeather(WeatherApi.weatherUrl(lang, location).toString())
+
+                val response: CurrentWeatherResponse = weatherApi.requestWeather(location.latitude, location.longitude)
+
                 _progressBarVisibility.value = android.view.View.VISIBLE
 
-                with(response) {
-                    val resp = body()?.string()
+                Timber.d(
+                    "$response " +
+                        "BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
+                )
 
-                    val data = CurrentWeatherResponse.toObject(resp.toString())
-                    Timber.d(
-                        "requestWeather: body $data \nmessage resp __ $resp \n" +
-                            "isSuccessful $isSuccessful  " +
-                            "BuildConfig.BUILD_TYPE ${BuildConfig.BUILD_TYPE} "
-                    )
-                    if (BuildConfig.BUILD_TYPE == "debug") {
-                        Timber.d(
-                            "requestWeather: networkResponse ${toString()}"
-                        )
-                    }
-
-                    if (isSuccessful && code() == 200) {
-                        Timber.d("requestWeather: responseChannel.send")
-                        withContext(Dispatchers.Main) {
-                            _progressBarVisibility.value = android.view.View.GONE
-                            onCurrentWeatherResponse(data)
-                        }
-                    }
+                withContext(Dispatchers.Main) {
+                    _progressBarVisibility.value = android.view.View.GONE
+                    onCurrentWeatherResponse(response)
                 }
             }
         }
