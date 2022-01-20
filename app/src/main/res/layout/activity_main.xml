@@ -4,9 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View" />
         <variable
             name="repository"
-            type="com.ibashniak.weatherapp.data.Repository"/>
+            type="com.ibashniak.weatherapp.data.Repository" />
+
+        <variable
+            name="mainActivity"
+            type="com.ibashniak.weatherapp.MainActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,7 +50,7 @@
                 android:layout_height="match_parent"
                 android:scaleX="0.3"
                 android:scaleY="0.3"
-                android:visibility="@{repository.progressBarVisibility}" />
+                android:visibility="@{mainActivity.isLoading ? View.VISIBLE : View.GONE}" />
 
         </FrameLayout>
 
