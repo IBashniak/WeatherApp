@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         const val CHECK_SETTINGS_CODE = 111
         const val REQUEST_LOCATION_PERMISSION = 222
     }
-    var isLoading = true
 
     private lateinit var animator: Animator
     private lateinit var locationProvider: LocationProvider
@@ -84,7 +83,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         super.onResume()
         coroutineScope.launch(Dispatchers.Main) {
             locationProvider.startLocationUpdates()
-            repo.startUpdate(locationProvider, this@MainActivity)
+            repo.startUpdate(locationProvider)
         }
         val availability = GoogleApiAvailability.getInstance()
 

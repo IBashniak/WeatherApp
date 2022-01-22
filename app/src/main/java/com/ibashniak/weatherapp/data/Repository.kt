@@ -5,7 +5,6 @@ import android.content.res.Resources
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ibashniak.weatherapp.BuildConfig
-import com.ibashniak.weatherapp.MainActivity
 import com.ibashniak.weatherapp.R
 import com.ibashniak.weatherapp.location.LocationProvider
 import com.ibashniak.weatherapp.network.dto.CurrentWeatherResponse
@@ -28,7 +27,10 @@ class Repository(
 ) {
     private val res: Resources = context.resources
     private val _weatherNow = MutableLiveData<CurrentWeather>(null)
+    private val _progressBarVisibility =
+        MutableLiveData(1).apply { value = android.view.View.VISIBLE }
     val currentWeather: LiveData<CurrentWeather> = _weatherNow
+    val progressBarVisibility: LiveData<Int> = _progressBarVisibility
 
     private fun iconFileName(weatherIcon: String): String =
         context.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
@@ -36,6 +38,7 @@ class Repository(
     private fun CoroutineScope.onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
         Timber.d("")
 
+        _progressBarVisibility.value = android.view.View.GONE
         val windSpeedUnits = res.getString(R.string.speed)
         val humidity = res.getString(R.string.humidity)
         val real = res.getString(R.string.real)
@@ -64,6 +67,7 @@ class Repository(
                         weather.wind.deg.toFloat(),
                         iconFileName(icon)
                     )
+                Timber.d("_progressBarVisibility.value  = ${progressBarVisibility.value} ")
             }
         }
     }
@@ -117,14 +121,15 @@ class Repository(
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun startUpdate(locationProvider: LocationProvider, mainActivity: MainActivity) =
+    suspend fun startUpdate(locationProvider: LocationProvider) =
         with(Dispatchers.Default) {
-            mainActivity.isLoading = true
             Timber.d("")
             locationProvider.locationChannel.getLocation().also { location ->
                 Timber.d("$location")
 
                 val response: CurrentWeatherResponse = weatherApi.requestWeather(location.latitude, location.longitude)
+
+                _progressBarVisibility.value = android.view.View.VISIBLE
 
                 Timber.d(
                     "$response " +
@@ -132,7 +137,7 @@ class Repository(
                 )
 
                 withContext(Dispatchers.Main) {
-                    mainActivity.isLoading = false
+                    _progressBarVisibility.value = android.view.View.GONE
                     onCurrentWeatherResponse(response)
                 }
             }
