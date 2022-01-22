@@ -45,7 +45,7 @@
                 android:layout_height="match_parent"
                 android:scaleX="0.3"
                 android:scaleY="0.3"
-                android:visibility="@{repository.progressBarVisibility}" />
+                app:isLoading="@{repository.isLoading}" />
 
         </FrameLayout>
 

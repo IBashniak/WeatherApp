@@ -27,10 +27,9 @@ class Repository(
 ) {
     private val res: Resources = context.resources
     private val _weatherNow = MutableLiveData<CurrentWeather>(null)
-    private val _isLoading =
-        MutableLiveData(1).apply { value = android.view.View.VISIBLE }
+    private val _isLoading = MutableLiveData(true)
     val currentWeather: LiveData<CurrentWeather> = _weatherNow
-    val progressBarVisibility: LiveData<Int> = _isLoading
+    val isLoading: LiveData<Boolean> = _isLoading
 
     private fun iconFileName(weatherIcon: String): String =
         context.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
@@ -38,7 +37,7 @@ class Repository(
     private fun CoroutineScope.onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
         Timber.d("")
 
-        _isLoading.value = android.view.View.GONE
+        _isLoading.postValue(false)
         val windSpeedUnits = res.getString(R.string.speed)
         val humidity = res.getString(R.string.humidity)
         val real = res.getString(R.string.real)
@@ -67,7 +66,7 @@ class Repository(
                         weather.wind.deg.toFloat(),
                         iconFileName(icon)
                     )
-                Timber.d("_progressBarVisibility.value  = ${progressBarVisibility.value} ")
+                Timber.d("_progressBarVisibility.value  = ${isLoading.value} ")
             }
         }
     }
@@ -127,9 +126,10 @@ class Repository(
             locationProvider.locationChannel.getLocation().also { location ->
                 Timber.d("$location")
 
-                val response: CurrentWeatherResponse = weatherApi.requestWeather(location.latitude, location.longitude)
+                val response: CurrentWeatherResponse =
+                    weatherApi.requestWeather(location.latitude, location.longitude)
 
-                _isLoading.value = android.view.View.VISIBLE
+                _isLoading.postValue(true)
 
                 Timber.d(
                     "$response " +
@@ -137,7 +137,7 @@ class Repository(
                 )
 
                 withContext(Dispatchers.Main) {
-                    _isLoading.value = android.view.View.GONE
+                    _isLoading.postValue(false)
                     onCurrentWeatherResponse(response)
                 }
             }
