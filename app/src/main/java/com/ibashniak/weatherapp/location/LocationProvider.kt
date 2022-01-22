@@ -10,18 +10,16 @@ import com.ibashniak.weatherapp.location.PermissionChecker.Companion.checkPermis
 import timber.log.Timber
 
 class LocationProvider(private val activity: Activity, val locationChannel: LocationChannel) {
-    private val MILLISECONDS_PER_SECOND = 1000
-    private val UPDATE_INTERVAL_IN_SECONDS = 60 * 5
-    private val UPDATE_INTERVAL_IN_MILLISECONDS =
-        MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS.toLong()
-    private val locationRequest: LocationRequest
-
-    init {
-        locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_LOW_POWER
-            interval = UPDATE_INTERVAL_IN_MILLISECONDS
-            fastestInterval = UPDATE_INTERVAL_IN_MILLISECONDS / 2
-        }
+    companion object {
+        private const val MILLISECONDS_PER_SECOND = 1000
+        private const val UPDATE_INTERVAL_IN_SECONDS = 60 * 5
+        private const val UPDATE_INTERVAL_IN_MILLISECONDS =
+            MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS.toLong()
+    }
+    private val locationRequest: LocationRequest = LocationRequest.create().apply {
+        priority = LocationRequest.PRIORITY_LOW_POWER
+        interval = UPDATE_INTERVAL_IN_MILLISECONDS
+        fastestInterval = UPDATE_INTERVAL_IN_MILLISECONDS / 2
     }
 
     private val locationSettingsAdapter = LocationSettingsAdapter(activity, locationRequest)

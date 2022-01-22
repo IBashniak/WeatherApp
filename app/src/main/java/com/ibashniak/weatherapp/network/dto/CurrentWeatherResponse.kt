@@ -20,15 +20,15 @@ data class CurrentWeatherResponse(
     val wind: Wind
 ) {
     val description: String
-        get() = "$name, $timestamp ${if (weather.isNotEmpty()) weather[0].description else ""}"
+        get() = "$name, $timestamp ${weather.firstOrNull()?.description.orEmpty()}"
 
     private val timestamp: String
         get() {
-            return timeString(dt, timezone)
+            return toTimeString(dt, timezone)
         }
 
     companion object {
-        fun timeString(dt: Long, timezone: Int): String {
+        fun toTimeString(dt: Long, timezone: Int): String {
             val date: LocalDateTime =
                 LocalDateTime.ofEpochSecond(dt, 0, ZoneOffset.ofTotalSeconds(timezone))
             val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")

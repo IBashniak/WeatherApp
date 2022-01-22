@@ -20,7 +20,6 @@ import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), KoinComponent {
     companion object {
-        const val CHECK_SETTINGS_CODE = 111
         const val REQUEST_LOCATION_PERMISSION = 222
     }
 

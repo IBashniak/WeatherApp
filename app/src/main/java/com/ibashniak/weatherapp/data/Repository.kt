@@ -27,10 +27,10 @@ class Repository(
 ) {
     private val res: Resources = context.resources
     private val _weatherNow = MutableLiveData<CurrentWeather>(null)
-    private val _progressBarVisibility =
+    private val _isLoading =
         MutableLiveData(1).apply { value = android.view.View.VISIBLE }
     val currentWeather: LiveData<CurrentWeather> = _weatherNow
-    val progressBarVisibility: LiveData<Int> = _progressBarVisibility
+    val progressBarVisibility: LiveData<Int> = _isLoading
 
     private fun iconFileName(weatherIcon: String): String =
         context.filesDir.toString() + File.separator + weatherIcon + FILE_NAME_END
@@ -38,7 +38,7 @@ class Repository(
     private fun CoroutineScope.onCurrentWeatherResponse(weather: CurrentWeatherResponse) {
         Timber.d("")
 
-        _progressBarVisibility.value = android.view.View.GONE
+        _isLoading.value = android.view.View.GONE
         val windSpeedUnits = res.getString(R.string.speed)
         val humidity = res.getString(R.string.humidity)
         val real = res.getString(R.string.real)
@@ -129,7 +129,7 @@ class Repository(
 
                 val response: CurrentWeatherResponse = weatherApi.requestWeather(location.latitude, location.longitude)
 
-                _progressBarVisibility.value = android.view.View.VISIBLE
+                _isLoading.value = android.view.View.VISIBLE
 
                 Timber.d(
                     "$response " +
@@ -137,7 +137,7 @@ class Repository(
                 )
 
                 withContext(Dispatchers.Main) {
-                    _progressBarVisibility.value = android.view.View.GONE
+                    _isLoading.value = android.view.View.GONE
                     onCurrentWeatherResponse(response)
                 }
             }
