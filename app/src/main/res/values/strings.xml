@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Weather App</string>
+    <string name="network_warning">Internet isn\'t available</string>
     <string name="request" translatable="false">request</string>
     <string name="comfort">comfort</string>
     <string name="real">real</string>

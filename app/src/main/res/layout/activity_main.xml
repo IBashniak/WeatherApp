@@ -47,6 +47,16 @@
                 android:scaleY="0.3"
                 app:isLoading="@{repository.isLoading}" />
 
+            <TextView
+                android:id="@+id/tv_warning"
+                android:layout_width="match_parent"
+                android:layout_height="49dp"
+                android:text="@string/network_warning"
+                android:textAlignment="center"
+                android:textColor="#F44336"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
         </FrameLayout>
 
         <TextView
@@ -140,10 +150,10 @@
 
             <TextView
                 android:id="@+id/tv_Humidity"
-                android:text="@{repository.currentWeather.humidity}"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/tv_tempRange"

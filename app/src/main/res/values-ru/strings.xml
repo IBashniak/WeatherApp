@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Как погодка?</string>
+    <string name="network_warning">Интернет не доступен!</string>
     <string name="humidity">влажность</string>
     <string name="speed">м/с</string>
     <string name="comfort">по ощущениям</string>

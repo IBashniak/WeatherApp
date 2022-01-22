@@ -1,7 +1,15 @@
 package com.ibashniak.weatherapp
 
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.coroutineScope
@@ -19,10 +27,28 @@ import org.koin.core.component.inject
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), KoinComponent {
+
     companion object {
         const val REQUEST_LOCATION_PERMISSION = 222
+        fun isNetworkAvailable(connectivityManager: ConnectivityManager): Boolean {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                connectivityManager.activeNetwork?.let { activeNetwork ->
+                    connectivityManager.getNetworkCapabilities(activeNetwork)
+                        ?.let { networkCapabilities ->
+                            return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) or
+                                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) or
+                                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) or
+                                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)
+                        }
+                }
+                return false
+            } else {
+                val nwInfo = connectivityManager.activeNetworkInfo ?: return false
+                return nwInfo.isConnected
+            }
+        }
     }
-
+    private lateinit var connectivityManager: ConnectivityManager
     private lateinit var animator: Animator
     private lateinit var locationProvider: LocationProvider
     private val coroutineScope = lifecycle.coroutineScope
@@ -32,7 +58,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        connectivityManager =
+            applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         locationProvider = LocationProvider(this, LocationChannel(coroutineScope))
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
@@ -80,9 +107,20 @@ class MainActivity : AppCompatActivity(), KoinComponent {
 
     override fun onResume() {
         super.onResume()
-        coroutineScope.launch(Dispatchers.Main) {
-            locationProvider.startLocationUpdates()
-            repo.startUpdate(locationProvider)
+        if (isNetworkAvailable(connectivityManager)) {
+            startUpdate()
+        } else {
+            Timber.d("Network is not available !!")
+            val networkCallback: ConnectivityManager.NetworkCallback =
+                object : ConnectivityManager.NetworkCallback() {
+                    override fun onAvailable(network: Network) {
+                        super.onAvailable(network)
+                        Timber.d(" ")
+                        startUpdate()
+                        connectivityManager.unregisterNetworkCallback(this)
+                    }
+                }
+            connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), networkCallback)
         }
         val availability = GoogleApiAvailability.getInstance()
 
@@ -94,6 +132,13 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                 " ${isGooglePlayServicesAvailable == ConnectionResult.SUCCESS} " +
                 "apkVer $apkVer clVer $clVer"
         )
+    }
+
+    private fun startUpdate() = coroutineScope.launch(Dispatchers.Main) {
+        activityMainBinding.tvWarning.visibility = View.GONE
+        activityMainBinding.tvHumidity.setTextColor(Color.BLACK)
+        locationProvider.startLocationUpdates()
+        repo.startUpdate(locationProvider)
     }
 
     override fun onPause() {
