@@ -16,22 +16,18 @@ class LocationProvider(private val activity: Activity, val locationChannel: Loca
         private const val UPDATE_INTERVAL_IN_MILLISECONDS =
             MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS.toLong()
     }
+
     private val locationRequest: LocationRequest = LocationRequest.create().apply {
         priority = LocationRequest.PRIORITY_LOW_POWER
         interval = UPDATE_INTERVAL_IN_MILLISECONDS
         fastestInterval = UPDATE_INTERVAL_IN_MILLISECONDS / 2
     }
 
-    private val locationSettingsAdapter = LocationSettingsAdapter(activity, locationRequest)
     private val fusedLocationProviderAdapter =
         FusedLocationProviderAdapter(activity, locationRequest, locationChannel)
 
     suspend fun startLocationUpdates() {
         try {
-            val locationSettingsResponse = locationSettingsAdapter.getLocationSettingsAsync()
-            Timber.d(
-                "isGpsPresent ${locationSettingsResponse.locationSettingsStates?.isGpsPresent}"
-            )
             if (checkPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 Timber.d("requestLocationUpdates")
                 fusedLocationProviderAdapter.requestLocationUpdates()
