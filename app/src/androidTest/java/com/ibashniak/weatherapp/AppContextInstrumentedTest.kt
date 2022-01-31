@@ -10,9 +10,9 @@ import org.junit.Test
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 
-class ExampleInstrumentedTest {
+class AppContextInstrumentedTest {
     @Test
-    fun useAppContext() {
+    fun appContextTest() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.ibashniak.weatherapp", appContext.packageName)

@@ -3,15 +3,19 @@ package com.ibashniak.weatherapp
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
+import android.os.Build
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
-// @RunWith(RobolectricTestRunner::class)
-// @Config(sdk = [Build.VERSION_CODES.M], qualifiers = "xxxhdpi")
+private val connectivityManager = mockk<ConnectivityManager>()
+
 class MainActivityTest {
-    private val connectivityManager = mockk<ConnectivityManager>()
 
     @Test
     fun `test isNetworkAvailable with Build_VERSION_CODES less than  M`() {
@@ -33,15 +37,48 @@ class MainActivityTest {
             MainActivity.isNetworkAvailable(connectivityManager)
         )
     }
+}
 
-    @Test // ToDO simulate Build.VERSION_CODES.M
-    fun `test isNetworkAvailable with Build_VERSION_CODES higher than  M`() {
-        val capabilities = mockk<NetworkCapabilities>()
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [Build.VERSION_CODES.M], qualifiers = "xxxhdpi")
+class MainActivityInstrumentedTest {
+    private val capabilities = mockk<NetworkCapabilities>()
+
+    @Before
+    fun setup() {
         every { connectivityManager.activeNetwork } returns mockk()
         every { connectivityManager.getNetworkCapabilities(any()) } returns capabilities
+        every { capabilities.hasTransport(any()) } returns false
+    }
+
+    @Test
+    fun `when WIFI is available then network isn available`() {
+
         every { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) } returns true
-        every { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns false
-        every { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) } returns false
-        every { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) } returns false
+        Assert.assertEquals(true, MainActivity.isNetworkAvailable(connectivityManager))
+    }
+
+    @Test
+    fun `when carrier service is available then network isn available`() {
+        every { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns true
+        Assert.assertEquals(true, MainActivity.isNetworkAvailable(connectivityManager))
+    }
+
+    @Test
+    fun `when ETHERNET is available then network isn available`() {
+
+        every { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) } returns true
+        Assert.assertEquals(true, MainActivity.isNetworkAvailable(connectivityManager))
+    }
+
+    @Test
+    fun `when BLUETOOTH is available then network isn available`() {
+        every { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) } returns true
+        Assert.assertEquals(true, MainActivity.isNetworkAvailable(connectivityManager))
+    }
+
+    @Test
+    fun `when NetworkCapabilities are not available then network isn't available`() {
+        Assert.assertEquals(false, MainActivity.isNetworkAvailable(connectivityManager))
     }
 }
