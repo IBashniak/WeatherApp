@@ -29,11 +29,11 @@ class LocationProvider(private val activity: Activity, val locationChannel: Loca
     suspend fun startLocationUpdates() {
         try {
             if (checkPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                Timber.d("requestLocationUpdates")
+                Timber.d(" ")
                 fusedLocationProviderAdapter.requestLocationUpdates()
             }
         } catch (exception: Exception) {
-            Timber.d("Task<LocationSettingsResponse> addOnFailureListener ${exception.message}")
+            Timber.d("${exception.message}")
             if (exception is ResolvableApiException) {
                 Timber.d("ResolvableApiException ${exception.resolution}")
                 // Location settings are not satisfied, but this can be fixed
