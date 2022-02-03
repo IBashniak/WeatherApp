@@ -32,12 +32,12 @@ class PermissionChecker {
                     // Check Permissions Now
 
                     val shouldShowRequestPermissionRationale =
-                        !ActivityCompat.shouldShowRequestPermissionRationale(
+                        ActivityCompat.shouldShowRequestPermissionRationale(
                             activity,
                             Manifest.permission.ACCESS_COARSE_LOCATION
                         )
                     Timber.d(
-                        "Check Permissions Now shouldShowRequestPermissionRationale $shouldShowRequestPermissionRationale"
+                        "shouldShowRequestPermissionRationale $shouldShowRequestPermissionRationale"
                     )
                     if (shouldShowRequestPermissionRationale) {
                         CoroutineScope(Dispatchers.Main + Job()).launch {
@@ -51,7 +51,10 @@ class PermissionChecker {
                                 )
                             }.onFailure {
                                 when (it) {
-                                    is Exception -> Timber.d("${it.message}")
+                                    is Exception -> {
+                                        Timber.d("${it.message}")
+                                        activity.finishAndRemoveTask()
+                                    }
                                     else -> continuation.resumeWithException(it)
                                 }
                             }

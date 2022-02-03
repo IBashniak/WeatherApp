@@ -1,12 +1,10 @@
 package com.ibashniak.weatherapp.location
 
-import android.Manifest
 import android.app.Activity
 import android.content.IntentSender
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.ibashniak.weatherapp.MainActivity
-import com.ibashniak.weatherapp.location.PermissionChecker.Companion.checkPermission
 import timber.log.Timber
 
 class LocationProvider(private val activity: Activity, val locationChannel: LocationChannel) {
@@ -26,12 +24,10 @@ class LocationProvider(private val activity: Activity, val locationChannel: Loca
     private val fusedLocationProviderAdapter =
         FusedLocationProviderAdapter(activity, locationRequest, locationChannel)
 
-    suspend fun startLocationUpdates() {
+    fun startLocationUpdates() {
+        Timber.d(" ")
         try {
-            if (checkPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                Timber.d(" ")
-                fusedLocationProviderAdapter.requestLocationUpdates()
-            }
+            fusedLocationProviderAdapter.requestLocationUpdates()
         } catch (exception: Exception) {
             Timber.d("${exception.message}")
             if (exception is ResolvableApiException) {

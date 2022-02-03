@@ -28,16 +28,11 @@ jobs:
           export API_KEY=$API_KEYV
           ./gradlew ktlintCheck
 
-      - name:  Build and Execute unit tests
-        run: |
-          export API_KEY=$API_KEYV
-          ./gradlew jacocoTestReport
-
       - name: Unit Test with Android Emulator Runner
         uses: ReactiveCircus/android-emulator-runner@v2.22.0
         with:
           api-level: 29
-          script: export API_KEY=$API_KEYV && ./gradlew createDebugCoverageReport
+          script: export API_KEY=$API_KEYV && ./gradlew jacocoTestReport
 
       - name: generate report
         uses: actions/upload-artifact@v2
