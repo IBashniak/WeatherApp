@@ -4,8 +4,8 @@ import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
-import com.ibashniak.weatherapp.MainActivity
 import com.ibashniak.weatherapp.ui.RequestPermissionDialog
+import com.ibashniak.weatherapp.view.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

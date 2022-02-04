@@ -12,7 +12,7 @@ import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class FusedLocationProviderAdapterTest {
+class LocationProviderTest {
     private val locationRequest = mockk<LocationRequest>()
     private val locationChannel = mockk<LocationChannel>().apply {
         justRun { send(any()) }
@@ -29,17 +29,24 @@ class FusedLocationProviderAdapterTest {
         every { locations } returns emptyList<Location>()
     }
 
-    private val sut = FusedLocationProviderAdapter(
+    private val sut = LocationProvider(
         mockk(),
-        locationRequest,
+        mockk(),
         locationChannel,
-        fusedLocationProviderClient
+        fusedLocationProviderClient,
+        locationRequest
     )
 
     @Test
     fun requestLocationUpdates() {
-        sut.requestLocationUpdates()
-        verify(exactly = 1) { fusedLocationProviderClient.requestLocationUpdates(any(), any(), any()) }
+        sut.startLocationUpdates()
+        verify(exactly = 1) {
+            fusedLocationProviderClient.requestLocationUpdates(
+                any(),
+                any(),
+                any()
+            )
+        }
     }
 
     @Test

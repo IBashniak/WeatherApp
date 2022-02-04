@@ -1,54 +1,61 @@
 package com.ibashniak.weatherapp.location
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.IntentSender
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.LocationRequest
-import com.ibashniak.weatherapp.MainActivity
+import android.os.Looper
+import com.google.android.gms.location.*
+import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
 
-class LocationProvider(private val activity: Activity, val locationChannel: LocationChannel) {
-    companion object {
-        private const val MILLISECONDS_PER_SECOND = 1000
-        private const val UPDATE_INTERVAL_IN_SECONDS = 60 * 5
-        private const val UPDATE_INTERVAL_IN_MILLISECONDS =
-            MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS.toLong()
-    }
+class LocationProvider(
+    activity: Activity,
+    scope: CoroutineScope,
+    val locationChannel: LocationChannel = LocationChannel(scope),
+    private var fusedLocationProviderClient: FusedLocationProviderClient =
+        FusedLocationProviderClient(activity),
 
     private val locationRequest: LocationRequest = LocationRequest.create().apply {
         priority = LocationRequest.PRIORITY_LOW_POWER
         interval = UPDATE_INTERVAL_IN_MILLISECONDS
         fastestInterval = UPDATE_INTERVAL_IN_MILLISECONDS / 2
     }
+) {
 
-    private val fusedLocationProviderAdapter =
-        FusedLocationProviderAdapter(activity, locationRequest, locationChannel)
+    private val locationCallBack = buildLocationCallBack()
 
+    @SuppressLint("MissingPermission")
     fun startLocationUpdates() {
         Timber.d(" ")
-        try {
-            fusedLocationProviderAdapter.requestLocationUpdates()
-        } catch (exception: Exception) {
-            Timber.d("${exception.message}")
-            if (exception is ResolvableApiException) {
-                Timber.d("ResolvableApiException ${exception.resolution}")
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
-                try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
-                    exception.startResolutionForResult(
-                        activity,
-                        MainActivity.REQUEST_LOCATION_PERMISSION
-                    )
-                } catch (sendEx: IntentSender.SendIntentException) {
-                    // Ignore the error.
-                }
-            }
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            locationCallBack,
+            Looper.getMainLooper()
+        )
+    }
+
+    fun buildLocationCallBack() = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            val currentLocation = locationResult.lastLocation
+            Timber.d(
+                "locations.size ${locationResult.locations.size}" +
+                    " locationResult.lastLocation ${currentLocation.latitude}"
+            )
+            locationChannel.send(currentLocation)
+        }
+
+        override fun onLocationAvailability(p0: LocationAvailability) {
+            Timber.d("isLocationAvailable ${p0.isLocationAvailable}")
         }
     }
 
     fun stopLocationUpdates() {
-        fusedLocationProviderAdapter.stopLocationUpdates()
+        fusedLocationProviderClient.removeLocationUpdates(locationCallBack)
+    }
+
+    companion object {
+        private const val MILLISECONDS_PER_SECOND = 1000
+        private const val UPDATE_INTERVAL_IN_SECONDS = 60 * 5
+        private const val UPDATE_INTERVAL_IN_MILLISECONDS =
+            MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS.toLong()
     }
 }

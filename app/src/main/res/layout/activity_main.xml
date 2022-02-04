@@ -4,15 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-            name="repository"
-            type="com.ibashniak.weatherapp.data.Repository"/>
+            name="viewModel"
+            type="com.ibashniak.weatherapp.viewmodel.WeatherViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".view.MainActivity">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -45,13 +46,14 @@
                 android:layout_height="match_parent"
                 android:scaleX="0.3"
                 android:scaleY="0.3"
-                app:isLoading="@{repository.isLoading}" />
+                app:isLoading="@{viewModel.isLoading}" />
 
             <TextView
                 android:id="@+id/tv_warning"
                 android:layout_width="match_parent"
                 android:layout_height="49dp"
                 android:text="@string/network_warning"
+                app:isNetworkMissed="@{viewModel.isNetworkMissed}"
                 android:textAlignment="center"
                 android:textColor="#F44336"
                 android:textSize="20sp"
@@ -61,7 +63,7 @@
 
         <TextView
             android:id="@+id/tv_description"
-            android:text="@{repository.currentWeather.description}"
+            android:text="@{viewModel.currentWeather.description}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/averia_libre_bold"
@@ -97,7 +99,7 @@
                     android:layout_width="50sp"
                     android:layout_height="match_parent"
                     android:includeFontPadding="false"
-                    android:text="@{repository.currentWeather.windSpeed}"
+                    android:text="@{viewModel.currentWeather.windSpeed}"
                     android:textAlignment="center"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -110,7 +112,7 @@
 
             <TextView
                 android:id="@+id/et_temperature"
-                android:text="@{repository.currentWeather.temperature}"
+                android:text="@{viewModel.currentWeather.temperature}"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="fill_vertical"
@@ -127,7 +129,7 @@
                 android:contentDescription="@string/iv_weatherConditionIcon_primary"
                 android:visibility="visible"
                 app:srcCompat="@android:drawable/ic_menu_compass"
-                app:weatherIcon="@{repository.currentWeather.icon}"
+                app:weatherIcon="@{viewModel.currentWeather.icon}"
                 tools:ignore="ImageContrastCheck"
                 tools:visibility="visible" />
 
@@ -143,7 +145,7 @@
 
             <TextView
                 android:id="@+id/tv_windScale"
-                android:text="@{repository.currentWeather.windScale}"
+                android:text="@{viewModel.currentWeather.windScale}"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
@@ -157,7 +159,7 @@
 
             <TextView
                 android:id="@+id/tv_tempRange"
-                android:text="@{repository.currentWeather.tempRange}"
+                android:text="@{viewModel.currentWeather.tempRange}"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />

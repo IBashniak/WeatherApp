@@ -16,3 +16,8 @@ fun loadImage(view: ImageView?, pathToIcon: String?) {
 fun isLoading(view: View, visible: Boolean) {
     view.visibility = if (visible) View.VISIBLE else View.GONE
 }
+
+@BindingAdapter("app:isNetworkMissed")
+fun isNetworkMissed(view: View, visible: Boolean) {
+    view.visibility = if (visible) View.VISIBLE else View.GONE
+}
