@@ -37,7 +37,7 @@ class PermissionChecker {
                             Manifest.permission.ACCESS_COARSE_LOCATION
                         )
                     Timber.d(
-                        "shouldShowRequestPermissionRationale $shouldShowRequestPermissionRationale"
+                        "should Show Request Permission Rationale $shouldShowRequestPermissionRationale"
                     )
                     if (shouldShowRequestPermissionRationale) {
                         CoroutineScope(Dispatchers.Main + Job()).launch {
@@ -59,8 +59,6 @@ class PermissionChecker {
                                 }
                             }
                         }
-                    } else {
-                        Timber.d("shouldShowRequestPermissionRationale =$shouldShowRequestPermissionRationale ")
                     }
                 }
             }

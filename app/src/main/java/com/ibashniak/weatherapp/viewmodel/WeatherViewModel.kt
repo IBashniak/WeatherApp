@@ -17,17 +17,20 @@ import com.ibashniak.weatherapp.location.LocationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 class WeatherViewModel(
     appContext: Context,
     private val coroutineScope: CoroutineScope,
     var locationProvider: LocationProvider,
-    private val repo: Repository
-) : ViewModel() {
+) : ViewModel(), KoinComponent {
+    private val repo: Repository by inject()
 
     val currentWeather: LiveData<CurrentWeather> = repo.currentWeather
     val isLoading = repo.isLoading
+    val rotation = 0F
 
     init {
         val availability = GoogleApiAvailability.getInstance()

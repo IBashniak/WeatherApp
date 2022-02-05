@@ -21,3 +21,11 @@ fun isLoading(view: View, visible: Boolean) {
 fun isNetworkMissed(view: View, visible: Boolean) {
     view.visibility = if (visible) View.VISIBLE else View.GONE
 }
+
+@BindingAdapter("app:rotation")
+fun rotation(view: View, windDegree: Float) {
+    val CIRCLE = 360
+    val DURATION = 1500L
+    view.rotation = 0F
+    view.animate().rotation(CIRCLE + windDegree).duration = DURATION
+}

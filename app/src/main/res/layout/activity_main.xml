@@ -37,6 +37,7 @@
                 android:scaleY="0.5"
                 android:rotation="90"
                 app:srcCompat="@drawable/baseline_navigation_24"
+                app:rotation="@{viewModel.rotation}"
                 android:contentDescription="@+id/iv_windDirection" />
 
             <ProgressBar

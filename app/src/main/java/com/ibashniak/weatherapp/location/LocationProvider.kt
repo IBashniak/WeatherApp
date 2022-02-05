@@ -20,7 +20,6 @@ class LocationProvider(
         fastestInterval = UPDATE_INTERVAL_IN_MILLISECONDS / 2
     }
 ) {
-
     private val locationCallBack = buildLocationCallBack()
 
     @SuppressLint("MissingPermission")
