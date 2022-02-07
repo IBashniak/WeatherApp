@@ -19,20 +19,50 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: gradle
-          API_KEYV: ${{ secrets.API_KEY }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Decode Keystore
+        id: write_file
+        uses: timheuer/base64-to-file@v1.1
+        with:
+          fileName: '../WeatherApp/WeatherApp/keystore/weatherApp.jks'
+          encodedString: ${{ secrets.KEYSTORE }}
+
+      - name: Build APK release
+        run: |
+          ./gradlew assembleRelease --stacktrace
+        env:
+          SIGN_STORE_PASSWORD: ${{ secrets.SIGN_STORE_PASSWORD }}
+          SIGN_KEY_PASSWORD: ${{ secrets.SIGN_KEY_PASSWORD }}
+          SIGN_KEY_ALIAS: ${{ secrets.SIGN_KEY_ALIAS }}
+          API_KEY: ${{ secrets.API_KEY }}
+
+      - name: Build APK debug
+        run: ./gradlew assembleDebug --stacktrace
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: weatherApp
+          path: app/build/outputs/apk/release/app-release.apk
+
       - name: Lint check
         run: |
-          export API_KEY=$API_KEYV
           ./gradlew ktlintCheck
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
 
       - name: Unit Test with Android Emulator Runner
         uses: ReactiveCircus/android-emulator-runner@v2.22.0
         with:
           api-level: 29
-          script: export API_KEY=$API_KEYV && ./gradlew jacocoTestReport
+          script: ./gradlew jacocoTestReport
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
 
       - name: generate report
         uses: actions/upload-artifact@v2

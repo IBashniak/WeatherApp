@@ -11,6 +11,14 @@ jacoco {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('../keystore/weatherApp.jks')
+            storePassword System.getenv("SIGN_STORE_PASSWORD")
+            keyAlias System.getenv("SIGN_KEY_ALIAS")
+            keyPassword System.getenv("SIGN_KEY_PASSWORD")
+        }
+    }
     compileSdkVersion 31
 
     buildFeatures {
@@ -47,6 +55,7 @@ android {
         }
 
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
